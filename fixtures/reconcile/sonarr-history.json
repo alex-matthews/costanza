@@ -1,0 +1,60 @@
+{
+  "page": 1,
+  "pageSize": 100,
+  "totalRecords": 5,
+  "records": [
+    {
+      "id": 801,
+      "seriesId": 42,
+      "episodeId": 3020,
+      "eventType": "grabbed",
+      "date": "2026-07-04T06:00:00Z",
+      "downloadId": "SABnzbd_nzo_seasonpack",
+      "quality": { "quality": { "id": 3, "name": "WEBDL-1080p" } },
+      "series": { "id": 42, "title": "The Expanse", "year": 2015, "tvdbId": 280619, "tmdbId": 63639 },
+      "episode": { "id": 3020, "seasonNumber": 2, "episodeNumber": 1, "title": "Safe" }
+    },
+    {
+      "id": 802,
+      "seriesId": 42,
+      "episodeId": 3021,
+      "eventType": "grabbed",
+      "date": "2026-07-04T06:00:00Z",
+      "downloadId": "SABnzbd_nzo_seasonpack",
+      "quality": { "quality": { "id": 3, "name": "WEBDL-1080p" } },
+      "series": { "id": 42, "title": "The Expanse", "year": 2015, "tvdbId": 280619, "tmdbId": 63639 },
+      "episode": { "id": 3021, "seasonNumber": 2, "episodeNumber": 2, "title": "Doors & Corners" }
+    },
+    {
+      "id": 803,
+      "seriesId": 42,
+      "episodeId": 3030,
+      "eventType": "grabbed",
+      "date": "2026-07-04T05:00:00Z",
+      "downloadId": "MISSEDEP",
+      "quality": { "quality": { "id": 3, "name": "WEBDL-1080p" } },
+      "series": { "id": 42, "title": "The Expanse", "year": 2015, "tvdbId": 280619, "tmdbId": 63639 },
+      "episode": { "id": 3030, "seasonNumber": 3, "episodeNumber": 1, "title": "Fight or Flight" }
+    },
+    {
+      "id": 804,
+      "seriesId": 42,
+      "episodeId": 3030,
+      "eventType": "downloadFailed",
+      "date": "2026-07-04T04:30:00Z",
+      "downloadId": "FAILEDDL",
+      "series": { "id": 42, "title": "The Expanse", "year": 2015, "tvdbId": 280619, "tmdbId": 63639 },
+      "episode": { "id": 3030, "seasonNumber": 3, "episodeNumber": 1, "title": "Fight or Flight" }
+    },
+    {
+      "id": 805,
+      "seriesId": 42,
+      "episodeId": 3010,
+      "eventType": "episodeFileDeleted",
+      "date": "2026-07-04T03:00:00Z",
+      "data": { "reason": "upgrade" },
+      "series": { "id": 42, "title": "The Expanse", "year": 2015, "tvdbId": 280619, "tmdbId": 63639 },
+      "episode": { "id": 3010, "seasonNumber": 1, "episodeNumber": 1, "title": "Dulcinea" }
+    }
+  ]
+}

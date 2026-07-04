@@ -72,7 +72,9 @@ def routing() -> RoutingConfig:
                     "discord": "123456789",
                 },
             ),
-            HouseholdUser(display="Bob", identities={"seerr": "bob", "plex": "bob"}),
+            HouseholdUser(
+                display="Bob", identities={"seerr": "bob", "plex": "bob", "tautulli": "13"}
+            ),
         ],
     )
 

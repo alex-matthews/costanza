@@ -374,6 +374,38 @@ class Store:
                 "SELECT * FROM events WHERE source_event_key = ?", (source_event_key,)
             ).fetchone()
 
+    def event_key_like(self, pattern: str) -> bool:
+        """LIKE match over source_event_keys (reconcile's fuzzy dedupe)."""
+        with self._lock:
+            return (
+                self._conn.execute(
+                    "SELECT 1 FROM events WHERE source_event_key LIKE ? LIMIT 1", (pattern,)
+                ).fetchone()
+                is not None
+            )
+
+    def has_event_near(
+        self,
+        type_: str,
+        media_id: str | None,
+        occurred_at: datetime,
+        window_hours: int = 24,
+    ) -> bool:
+        """Any event of this type for this media within +/- window (reconcile guard)."""
+        if media_id is None:
+            return False
+        lo = _iso(occurred_at - timedelta(hours=window_hours))
+        hi = _iso(occurred_at + timedelta(hours=window_hours))
+        with self._lock:
+            return (
+                self._conn.execute(
+                    "SELECT 1 FROM events WHERE type = ? AND media_id = ?"
+                    " AND occurred_at BETWEEN ? AND ? LIMIT 1",
+                    (type_, media_id, lo, hi),
+                ).fetchone()
+                is not None
+            )
+
     def list_events(
         self,
         *,

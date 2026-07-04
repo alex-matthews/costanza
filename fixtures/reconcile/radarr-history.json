@@ -1,0 +1,46 @@
+{
+  "page": 1,
+  "pageSize": 100,
+  "totalRecords": 4,
+  "records": [
+    {
+      "id": 904,
+      "movieId": 512,
+      "eventType": "movieFileDeleted",
+      "date": "2026-07-04T09:30:00Z",
+      "sourceTitle": "Dune.Part.Two.2024.1080p.WEB-DL.DDP5.1.H.264-GROUP",
+      "data": { "reason": "upgrade" },
+      "movie": { "id": 512, "title": "Dune: Part Two", "year": 2024, "tmdbId": 693134 }
+    },
+    {
+      "id": 903,
+      "movieId": 512,
+      "eventType": "downloadFolderImported",
+      "date": "2026-07-04T09:00:00Z",
+      "downloadId": "MISSED123",
+      "quality": { "quality": { "id": 19, "name": "WEBDL-2160p" } },
+      "data": { "isUpgrade": "true" },
+      "movie": { "id": 512, "title": "Dune: Part Two", "year": 2024, "tmdbId": 693134 }
+    },
+    {
+      "id": 902,
+      "movieId": 686,
+      "eventType": "downloadFolderImported",
+      "date": "2026-07-04T08:00:00Z",
+      "downloadId": "SABnzbd_nzo_kjb2cd8x",
+      "quality": { "quality": { "id": 19, "name": "WEBDL-2160p" } },
+      "data": {},
+      "movie": { "id": 686, "title": "Arrival", "year": 2016, "tmdbId": 329865 }
+    },
+    {
+      "id": 901,
+      "movieId": 686,
+      "eventType": "grabbed",
+      "date": "2026-07-04T07:00:00Z",
+      "downloadId": "SABnzbd_nzo_kjb2cd8x",
+      "quality": { "quality": { "id": 19, "name": "WEBDL-2160p" } },
+      "data": { "indexer": "nzbgeek" },
+      "movie": { "id": 686, "title": "Arrival", "year": 2016, "tmdbId": 329865 }
+    }
+  ]
+}
