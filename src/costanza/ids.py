@@ -17,7 +17,7 @@ def sha16(data: object) -> str:
 
     Used as the fallback discriminator inside source_event_keys when the
     payload carries no native id: it depends only on payload content, so a
-    Chaski tee or a source retry produces the same key.
+    relayed/tee'd duplicate or a source retry produces the same key.
     """
     canonical = json.dumps(data, sort_keys=True, separators=(",", ":"), default=str)
     return hashlib.sha256(canonical.encode()).hexdigest()[:16]
