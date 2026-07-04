@@ -111,6 +111,36 @@ open, or a discovery worth carrying into open-questions.
   added; `Store.enqueue_outbox` accepts an injected clock (fixed a
   time-of-day-dependent flake in worker tests).
 
+## Reviewer follow-up round (2026-07-05)
+
+- **Reconcile crash repair.** The notifying applier gained a `repair()`
+  path: when reconcile meets an exact-key duplicate, it re-enqueues the
+  ledger rows a crashed previous run may have skipped. Bounded to
+  reconcile-origin events with `received_at` strictly after the current
+  window start, so webhook twins stay the ingest worker's job and
+  kill-switch-suppressed history from completed runs is never backfilled
+  (the strict bound works because a successful run advances the cursor
+  to exactly its own `now`). Gap markers repair via a newest-marker
+  lookup; gap marking moved inside the per-source error boundary.
+  Repairs are never counted as recovered.
+- **CI/release/Renovate** added in the Resolute house style: tests
+  (lock check, pytest, replay) + no-push container build on PRs; lint
+  (ruff, hadolint, actionlint+zizmor); release-please (python type);
+  release via the docker/github-builder reusable workflow to
+  ghcr.io/alex-matthews/costanza with SBOM, provenance, and cosign
+  keyless signing; self-hosted Renovate on the bot-app pattern
+  (BOT_APP_CLIENT_ID / BOT_APP_PRIVATE_KEY); Trivy scan report-only with
+  the same rationale as Resolute. All actions SHA-pinned, minimal
+  per-job permissions, persist-credentials false. mise gained
+  workflow-lint and ci tasks; mise.lock now carries full checksums.
+- **App version** derives from package metadata (importlib.metadata),
+  so release-please version bumps flow into `/docs` and the FastAPI app
+  without code edits.
+- **Container hardening:** `PYTHONDONTWRITEBYTECODE=1`,
+  `PYTHONUNBUFFERED=1`; verified the image serves probes under
+  `--read-only --cap-drop=ALL --security-opt no-new-privileges` with no
+  tmpfs — only /data needs write. Deploy notes carry the securityContext.
+
 ## Discoveries / candidates for open-questions
 
 - **Seerr request-id consistency (reconcile dedupe):** webhook

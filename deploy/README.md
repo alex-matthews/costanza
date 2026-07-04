@@ -17,6 +17,21 @@ Shape (mirrors Resolute and the handoff):
   and `costanza_webhook_auth_failures_total`.
 - Cluster-internal Service only (`http://costanza.default.svc:8140`);
   no ingress in v1 — Discord uses an outbound gateway connection.
+- Container security context (verified against the image — it runs with a
+  read-only root filesystem, all capabilities dropped, and no /tmp):
+
+  ```yaml
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1033
+    runAsGroup: 100
+    readOnlyRootFilesystem: true
+    allowPrivilegeEscalation: false
+    capabilities: { drop: ["ALL"] }
+  ```
+
+  Only `/data` (PVC) needs to be writable; bytecode is precompiled at
+  image build time (`PYTHONDONTWRITEBYTECODE=1` at runtime).
 
 Rollout is the six-step plan in docs/handoff.md: shadow ingest with the
 kill switch ON, reconcile confidence, private channel, household channel,

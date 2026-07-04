@@ -22,7 +22,11 @@ LABEL org.opencontainers.image.source="https://github.com/alex-matthews/costanza
 COPY --from=build /app/.venv /app/.venv
 COPY config/routing.example.yaml /config/routing.yaml
 
+# Read-only-rootfs friendly: bytecode was precompiled at build time
+# (UV_COMPILE_BYTECODE), so the runtime never writes outside /data.
 ENV PATH="/app/.venv/bin:$PATH" \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
     COSTANZA_DB_PATH=/data/costanza.db \
     COSTANZA_ROUTING_PATH=/config/routing.yaml \
     COSTANZA_LISTEN_PORT=8140
