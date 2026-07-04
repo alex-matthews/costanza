@@ -73,7 +73,8 @@ noise control), not to infrastructure.
 
 ## Language / runtime
 
-**Python 3.13 + uv**, FastAPI + uvicorn, pydantic v2 models for all
+**Python + uv + mise, pinned to the same Python minor as Resolute
+(3.14.x today)**, FastAPI + uvicorn, pydantic v2 models for all
 contracts, `discord.py` behind a notifier port, APScheduler (or a simple
 asyncio cron loop) for jobs. Mirrors Resolute's toolchain (uv, pytest,
 ruff, fixtures, no-network tests) so the two services share one house
