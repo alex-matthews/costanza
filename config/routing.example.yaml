@@ -1,0 +1,62 @@
+# Costanza routing config (mounted as a ConfigMap in production).
+# Secrets never live here: webhook secrets come from WEBHOOK_SECRET__{SOURCE}
+# env vars, API keys from {SOURCE}_API_KEY (see docs/handoff.md).
+#
+# v1 registers exactly these four sources. `radarr-se` (the admin's personal
+# instance, OQ-1) is deliberately absent; adding it later is a new entry here
+# plus a WEBHOOK_SECRET__RADARR_SE env var — no code change.
+
+sources:
+  - name: seerr
+    kind: seerr
+    url: http://seerr.default.svc
+  - name: radarr
+    kind: radarr
+    url: http://radarr.default.svc
+  - name: sonarr
+    kind: sonarr
+    url: http://sonarr.default.svc
+  - name: tautulli
+    kind: tautulli
+    url: http://tautulli.default.svc
+
+# OQ-2 default topology: feed + digest + admin.
+channels:
+  media-feed:
+    discord_channel_id: null   # fill with the real channel id at rollout
+  media-digest:
+    discord_channel_id: null
+  media-admin:
+    discord_channel_id: null
+
+# Event-type allowlist x channel routing. Anything not matched is stored
+# but never notified.
+rules:
+  - types: [request.approved, request.available]
+    channel: media-feed
+  - types: [health.issue, reconcile.gap]
+    channel: media-admin
+
+admin_channel: media-admin
+
+digest:
+  channel: media-digest
+  cron: "0 18 * * 0"           # Sunday 18:00
+
+watch_completion:
+  tautulli_watched_trigger: true   # OQ-3: trust Tautulli's watched trigger…
+  progress_threshold: 85           # …else derive from playback.stopped >= 85%
+
+rate_limits:
+  per_channel_per_minute: 10
+
+# Household identity map (OQ-8): filled by the admin during rollout step 3.
+users: []
+# users:
+#   - display: Alice
+#     admin: true
+#     identities:
+#       seerr: alice
+#       plex: alice
+#       tautulli: "12"
+#       discord: "123456789012345678"
