@@ -190,8 +190,9 @@ class Config(BaseModel):
 def load_routing(path: Path) -> RoutingConfig:
     if not path.exists():
         raise FileNotFoundError(
-            f"routing config not found at {path}; set COSTANZA_ROUTING_PATH "
-            "(the container ships a default at /config/routing.yaml)"
+            f"routing config not found at {path}: mount the routing ConfigMap "
+            "at /config/routing.yaml (or set COSTANZA_ROUTING_PATH). The image "
+            "deliberately ships no config."
         )
     data = yaml.safe_load(path.read_text()) or {}
     return RoutingConfig.model_validate(data)

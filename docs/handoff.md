@@ -1,5 +1,16 @@
 # V1 implementation handoff
 
+> **Ops-authority correction (2026-07-05):** where this document cites
+> Resolute as the precedent for container/deployment/tooling patterns,
+> read the authority as the **live cluster** instead: home-ops manifests
+> (securityContext `runAsUser: 1032, runAsGroup: 100, fsGroup: 100,
+> fsGroupChangePolicy: OnRootMismatch`; volsync movers at PUID 1032) and
+> home-operations/containers (identity-agnostic images, `USER
+> nobody:nogroup`, alpine base, no baked config). Resolute shared these
+> flaws and was corrected in the same ops reset — see
+> [build-notes.md](build-notes.md). Product/boundary discussion of
+> Resolute-the-service is unaffected.
+
 Everything a build session needs. Scope: Tiers 0–1 only (observe + notify).
 
 ## Repo structure

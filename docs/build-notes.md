@@ -123,7 +123,9 @@ open, or a discovery worth carrying into open-questions.
   to exactly its own `now`). Gap markers repair via a newest-marker
   lookup; gap marking moved inside the per-source error boundary.
   Repairs are never counted as recovered.
-- **CI/release/Renovate** added in the Resolute house style: tests
+- **CI/release/Renovate** added (patterns shared with Resolute; the
+  action pins were later re-verified against the live home-ops workflows —
+  see the ops reset section below): tests
   (lock check, pytest, replay) + no-push container build on PRs; lint
   (ruff, hadolint, actionlint+zizmor); release-please (python type);
   release via the docker/github-builder reusable workflow to
@@ -140,6 +142,70 @@ open, or a discovery worth carrying into open-questions.
   `PYTHONUNBUFFERED=1`; verified the image serves probes under
   `--read-only --cap-drop=ALL --security-opt no-new-privileges` with no
   tmpfs — only /data needs write. Deploy notes carry the securityContext.
+
+## Ops reset (2026-07-05, external review "Prompt A", H1-H10)
+
+Blocker-grade container/deploy conflicts with the live cluster, fixed:
+
+- **H1/H3 image user model + base:** the image no longer bakes storage
+  identity (dropped `useradd -u 1033`, `chown`, `VOLUME`). Base is
+  `python:3.14-alpine3.24` (SHA-pinned), uv multi-stage kept,
+  `USER nobody:nogroup` as the bare-run default — the
+  home-operations/containers precedent (apps/tautulli). The image runs
+  correctly as any arbitrary uid:gid; Kubernetes supplies identity. No
+  musl wheel problems: the alpine build resolved every dependency from
+  the existing lockfile unchanged.
+- **H2 deploy docs:** previous deploy/README.md said `runAsUser: 1033`
+  and omitted `fsGroup` entirely — data written as 1033 without fsGroup
+  breaks the volsync restic movers (`${VOLSYNC_PUID:=1032}`). Corrected
+  to the verified cluster standard: `runAsUser: 1032, runAsGroup: 100,
+  fsGroup: 100, fsGroupChangePolicy: OnRootMismatch, runAsNonRoot: true`
+  plus read-only rootfs / drop ALL / no privilege escalation.
+- **H4 no baked config:** `COPY routing.example.yaml /config/routing.yaml`
+  removed from the image; the app fails fast with a clear error when the
+  ConfigMap is absent. Smoke tooling mounts the example config
+  explicitly and read-only.
+- **H5 constraint test scope:** the no-external-writes scan now covers
+  ALL of src/costanza (previously clients/ only, while prose claimed the
+  whole binary — overclaim confirmed by the review). Explicit allowlist:
+  `replay.py` (self-targeting dev tool POSTing fixtures at a local
+  scratch instance); inbound `@router.post` route declarations are
+  skipped per-line; a guard test keeps the allowlist from growing.
+- **H6 Kubernetes-constraint smoke:** `scripts/k8s-smoke.sh` (+ mise
+  `k8s-smoke`, wired into the CI container job) runs the built image with
+  `--user 1032:100 --read-only --cap-drop ALL`, no HOME, only a mounted
+  /data writable, config read-only — asserts probes, DB creation in
+  /data, and clean logs.
+- **H7 SQLite-on-volsync posture** documented in deploy/README.md:
+  Snapshot copyMethod = crash-consistent point-in-time; WAL sidecars
+  restore together and replay on open; concrete restore drill (scratch
+  PVC -> debug pod as 1032:100 -> `PRAGMA integrity_check` + recency
+  queries).
+- **H8 docs authority sweep:** "Resolute as house style" removed from
+  living docs; architecture.md/handoff.md carry an ops-authority
+  correction note pointing at home-ops live manifests and
+  home-operations/containers. v1-build-prompt.md is left as the
+  historical record of what the build was told. Product/boundary
+  discussion of Resolute-the-service unchanged.
+- **H9 workflow parity audit:** the shared action pins
+  (actions/checkout, jdx/mise-action, actions/create-github-app-token,
+  renovatebot/github-action) match the live home-ops workflows exactly.
+  Intentional divergences kept: pinned `RENOVATE_VERSION` +
+  `RENOVATE_REPOSITORIES` + mise unsafe-execution env (code repos need
+  `mise lock`; home-ops uses autodiscover + latest), and the
+  docker/release-please/trivy/codeql actions have no home-ops
+  counterpart (SHA-pinned, adopted deliberately). No cosmetic churn.
+- **H10 secrets audit:** Seerr/Arr clients verified to inherit the
+  sanitized ReadOnlyClient error path (tests added, mirroring the
+  Tautulli ones); a new test proves neither presented nor configured
+  webhook secrets ever appear in ingest logs (auth failures log the
+  source name only). Resolute's Seerr/Sonarr clients were checked in the
+  same pass — see its build notes.
+
+Accepted risks restated from the review: kill-switch `set_by` free text
+(H14), Tautulli apikey in cluster-internal URLs (H15), single household
+bearer token (H16), repair-based (not transactional) consistency (H17),
+Trivy image-scan first-run failure until `:main` exists (H18).
 
 ## Discoveries / candidates for open-questions
 

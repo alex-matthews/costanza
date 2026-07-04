@@ -22,7 +22,7 @@ FIXTURES = Path(__file__).parent.parent / "fixtures"
 
 @pytest.fixture(autouse=True)
 def _no_network(monkeypatch):
-    """Tests never touch the network (Resolute house rule)."""
+    """Tests never touch the network (house rule: offline by default)."""
 
     def guard(*args, **kwargs):
         raise RuntimeError("network access is disabled in tests")

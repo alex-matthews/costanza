@@ -53,8 +53,10 @@ Implementation deviations from the design pack are recorded in
   digest. Everything else layers on top.
 - **Household:** 4–8 mixed users; per-user identity is foundational, voting
   mechanics are deferred but designed-for.
-- **Runtime:** Python + uv + mise, matching [resolute](../resolute)
-  conventions (pin the same Python minor Resolute is on — 3.14.x today).
+- **Runtime:** Python + uv + mise (3.14.x). Ops/tooling precedent is the
+  live cluster: home-ops manifests for deployment posture and
+  home-operations/containers (e.g. `apps/tautulli`) for the container
+  pattern — identity-agnostic images, storage identity from Kubernetes.
 - **V1 is read-only against every external system.** Costanza writes nothing
   to Seerr/Radarr/Sonarr/Maintainerr in v1; the only writes are to its own
   store and to Discord messages.

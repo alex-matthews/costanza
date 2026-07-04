@@ -297,3 +297,75 @@ def test_stuck_pending_raw_also_redacted(store, routing, now):
     _, _, redacted = store.prune(30, now)
     assert redacted == 1
     assert "secret" not in store.get_raw(raw)["body_json"]
+
+
+# -- H10: every read client shares the sanitized error path; webhook secrets
+# -- never reach logs -----------------------------------------------------------
+
+
+def _leaky_transport(secret_marker):
+    def handler(request: httpx.Request) -> httpx.Response:
+        # The secret is on the wire (header or URL) — that's expected;
+        # it must never surface in raised exceptions or logs.
+        assert secret_marker in str(request.url) or secret_marker in str(
+            dict(request.headers)
+        )
+        return httpx.Response(500, text="boom")
+
+    return httpx.MockTransport(handler)
+
+
+def test_seerr_client_failures_are_sanitized():
+    from costanza.clients import SeerrClient
+
+    key = "seerr-api-key-abc123"
+    client = SeerrClient("http://seerr.local", key, transport=_leaky_transport(key))
+    with pytest.raises(ClientError) as excinfo:
+        client.get_requests()
+    assert key not in str(excinfo.value)
+    assert key not in "".join(traceback.format_exception(excinfo.value))
+    assert "HTTP 500" in str(excinfo.value)
+
+
+def test_arr_client_failures_are_sanitized():
+    from costanza.clients import ArrClient
+
+    key = "radarr-api-key-def456"
+    client = ArrClient("http://radarr.local", key, transport=_leaky_transport(key))
+    with pytest.raises(ClientError) as excinfo:
+        client.get_history()
+    assert key not in str(excinfo.value)
+    assert key not in "".join(traceback.format_exception(excinfo.value))
+
+
+def test_webhook_secret_never_logged(store, routing, monkeypatch):
+    """Neither a wrong presented token nor the configured secret may appear
+    in ingest logs — auth failures log only the source name."""
+    import structlog
+    from fastapi import FastAPI
+    from fastapi.testclient import TestClient
+
+    from costanza.ingest import SourceRegistry, build_ingest_router
+
+    real_secret = "real-webhook-secret-xyz"
+    wrong_secret = "attacker-guess-123"
+    monkeypatch.setenv("WEBHOOK_SECRET__RADARR", real_secret)
+    store.sync_sources(routing.sources)
+    app = FastAPI()
+    app.include_router(build_ingest_router(SourceRegistry(routing), store, 1024))
+    client = TestClient(app)
+
+    with structlog.testing.capture_logs() as logs:
+        resp = client.post(
+            "/webhooks/radarr", json={}, headers={"X-Webhook-Token": wrong_secret}
+        )
+        assert resp.status_code == 401
+        client.post(
+            "/webhooks/radarr",
+            content="{not json",
+            headers={"X-Webhook-Token": real_secret, "Content-Type": "application/json"},
+        )
+    rendered = json.dumps(logs, default=str)
+    assert wrong_secret not in rendered
+    assert real_secret not in rendered
+    assert any(entry.get("source") == "radarr" for entry in logs)
