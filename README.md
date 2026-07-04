@@ -25,6 +25,7 @@ This is a clean-sheet replacement for the abandoned first Costanza
 | [docs/handoff.md](docs/handoff.md) | V1 implementation handoff: repo layout, modules, contracts, data model, jobs, config, k8s, testing, rollout |
 | [docs/risks.md](docs/risks.md) | Risk register |
 | [docs/open-questions.md](docs/open-questions.md) | Blocking questions with recommended defaults |
+| [docs/v1-build-prompt.md](docs/v1-build-prompt.md) | Scoped build prompt: hand this to the implementing model |
 
 ## Decisions already locked (by the household)
 
