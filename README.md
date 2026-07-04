@@ -1,8 +1,8 @@
 # costanza
 
-**Status: design pack only — no production code yet.**
+**Status: v1 implemented (Tiers 0–1: observe + notify) — awaiting shadow rollout.**
 
-Costanza is (will be) the household media event layer for a self-hosted media
+Costanza is the household media event layer for a self-hosted media
 stack: it normalizes request / acquisition / availability / watch / lifecycle
 signals from Seerr, Radarr, Sonarr, and Tautulli into durable canonical events,
 and turns them into low-noise household notifications, digests, and stats.
@@ -11,6 +11,26 @@ recommendations, voting, and library-lifecycle workflows.
 
 This is a clean-sheet replacement for the abandoned first Costanza
 (Python Discord bot + webhook receiver). No compatibility is preserved.
+
+## Quickstart
+
+```sh
+mise run sync      # uv sync --locked
+mise run test      # pytest (offline)
+mise run lint      # ruff
+mise run replay    # e2e smoke: fixtures -> scratch instance -> assertions
+mise run run       # local dev server against config/routing.example.yaml
+mise run build     # docker build (nonroot, /data volume)
+```
+
+Configuration is env-first (`COSTANZA_*`, `WEBHOOK_SECRET__{SOURCE}`,
+`{SOURCE}_API_KEY`, `API_BEARER_TOKEN`, `DISCORD_TOKEN`) plus a
+`routing.yaml` for sources, channels, allowlist rules, digest schedule, and
+the household identity map — see [config/routing.example.yaml](config/routing.example.yaml).
+A fresh store boots with the notification kill switch **engaged**; disengage
+via `POST /api/v1/admin/kill-switch` when shadow ingest looks healthy.
+Implementation deviations from the design pack are recorded in
+[docs/build-notes.md](docs/build-notes.md).
 
 ## Design pack
 

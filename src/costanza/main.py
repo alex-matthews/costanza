@@ -63,6 +63,12 @@ def build_runtime(config: Config | None = None) -> Runtime:
 
         notifier = DiscordNotifier(config.settings.discord_token, config.routing)
 
+    # Pre-touch per-source label values so the alertable counters are
+    # visible from the very first scrape, not the first event.
+    for source in config.routing.sources:
+        metrics.WEBHOOKS_RECEIVED.labels(source=source.name)
+        metrics.WEBHOOK_AUTH_FAILURES.labels(source=source.name)
+
     metrics.bind_backlog_gauges(
         store.outbox_backlog,
         store.outbox_dead_count,
