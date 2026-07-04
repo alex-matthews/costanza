@@ -19,7 +19,7 @@ from datetime import datetime, timedelta
 from ..config import RoutingConfig
 from ..correlate import Correlator
 from ..notify.limits import KillSwitch
-from ..notify.pipeline import enqueue_for_event
+from ..notify.pipeline import enqueue_for_event, event_from_row
 from ..logging import get_logger
 from ..normalize.common import to_int
 from ..schemas import CanonicalEvent, MediaRef, UserRef, utcnow
@@ -84,6 +84,26 @@ class _NotifyingApplier:
             enqueue_for_event(self._store, self._routing, self._kill, event)
         return inserted
 
+    def repair(self, event_row, window_start: datetime) -> None:
+        """Re-enqueue ledger rows for an event a previous reconcile run
+        inserted but may not have fanned out (crash between the insert and
+        the enqueue). Bounded to reconcile-origin rows synthesized after
+        the current window start: webhook-origin twins are the ingest
+        worker's crash-repair responsibility, and events from *completed*
+        runs (received_at == the advanced cursor == window_start, hence
+        the strict >) were either enqueued already or deliberately
+        suppressed by the kill switch at synthesis time — repairing those
+        would flood channels when the switch disengages.
+        """
+        if self._kill is None or event_row is None:
+            return
+        if event_row["origin"] != "reconcile":
+            return
+        if datetime.fromisoformat(event_row["received_at"]) <= window_start:
+            return
+        event = event_from_row(self._store, event_row)
+        enqueue_for_event(self._store, self._routing, self._kill, event)
+
 
 def run_reconcile(
     store: Store,
@@ -110,7 +130,9 @@ def run_reconcile(
         window_start = _parse_dt(cursor.get("last_run")) or (now - DEFAULT_LOOKBACK)
         try:
             if source.kind == "seerr":
-                recovered = _reconcile_seerr(store, applier, source.name, client, now)
+                recovered = _reconcile_seerr(
+                    store, applier, source.name, client, window_start, now
+                )
             elif source.kind in ("radarr", "sonarr"):
                 recovered = _reconcile_arr(
                     store, applier, source.name, client, window_start, now
@@ -121,16 +143,16 @@ def run_reconcile(
                 )
             else:
                 continue
+            gap_marked = False
+            if source.kind in TRANSIENT_KINDS:
+                gap_marked = _mark_gap(
+                    applier, store, source.name, source.kind, window_start, recovered, now
+                )
         except Exception as exc:  # noqa: BLE001 — one broken source must not stop the rest
             log.error("reconcile failed", source=source.name, error=str(exc))
             summary[source.name] = {"error": str(exc)}
             continue
 
-        gap_marked = False
-        if recovered and source.kind in TRANSIENT_KINDS:
-            gap_marked = _mark_gap(
-                applier, source.name, source.kind, window_start, recovered, now
-            )
         store.set_cursor(f"reconcile:{source.name}", {"last_run": now.isoformat()}, now)
         summary[source.name] = {"recovered": recovered, "gap_marked": gap_marked}
         if recovered:
@@ -139,16 +161,33 @@ def run_reconcile(
 
 
 def _mark_gap(
-    correlator: Correlator | _NotifyingApplier,
+    applier: _NotifyingApplier,
+    store: Store,
     source_name: str,
     source_kind: str,
     window_start: datetime,
     recovered: int,
     now: datetime,
 ) -> bool:
+    key = f"{source_name}:reconcile.gap:{window_start.isoformat()}"
+    existing = store.get_event_by_key(key)
+    if recovered == 0:
+        # Nothing new this run; a marker from a crashed previous run may
+        # still owe its notification. The crashed run's window (baked into
+        # its key) can differ from ours when no cursor existed yet, so look
+        # up the newest marker for this source; repair() enforces the
+        # window bound either way.
+        rows = store.query(
+            "SELECT * FROM events WHERE type = 'reconcile.gap'"
+            " AND source_event_key LIKE ? ORDER BY received_at DESC LIMIT 1",
+            (f"{source_name}:reconcile.gap:%",),
+        )
+        if rows:
+            applier.repair(rows[0], window_start)
+        return False
     marker = CanonicalEvent(
         source=source_name,
-        source_event_key=f"{source_name}:reconcile.gap:{window_start.isoformat()}",
+        source_event_key=key,
         origin="reconcile",
         type="reconcile.gap",
         occurred_at=now,
@@ -159,7 +198,10 @@ def _mark_gap(
             "transient_kinds": TRANSIENT_KINDS[source_kind],
         },
     )
-    return correlator.apply(marker)
+    inserted = applier.apply(marker)
+    if not inserted and existing is not None:
+        applier.repair(existing, window_start)
+    return inserted
 
 
 # -- seerr: request lifecycle is fully reconstructable --------------------------
@@ -222,15 +264,24 @@ def _seerr_expected(source: str, request: dict) -> list[CanonicalEvent]:
 
 
 def _reconcile_seerr(
-    store: Store, correlator: Correlator | _NotifyingApplier, source: str, client, now: datetime
+    store: Store,
+    applier: _NotifyingApplier,
+    source: str,
+    client,
+    window_start: datetime,
+    now: datetime,
 ) -> int:
     recovered = 0
     for request in client.get_requests():
         for event in _seerr_expected(source, request):
-            if store.event_key_exists(event.source_event_key):
+            existing = store.get_event_by_key(event.source_event_key)
+            if existing is not None:
+                # Crash repair (never counted as recovered): a previous run
+                # may have died between this insert and its enqueue.
+                applier.repair(existing, window_start)
                 continue
             event.received_at = now
-            if correlator.apply(event):
+            if applier.apply(event):
                 recovered += 1
     return recovered
 
@@ -306,7 +357,7 @@ def _arr_record_event(source: str, record: dict) -> CanonicalEvent | None:
 
 def _reconcile_arr(
     store: Store,
-    correlator: Correlator | _NotifyingApplier,
+    applier: _NotifyingApplier,
     source: str,
     client,
     window_start: datetime,
@@ -317,7 +368,9 @@ def _reconcile_arr(
         event = _arr_record_event(source, record)
         if event is None:
             continue  # flag-only kinds (health, failures) are never synthesized
-        if store.event_key_exists(event.source_event_key):
+        existing = store.get_event_by_key(event.source_event_key)
+        if existing is not None:
+            applier.repair(existing, window_start)  # crash repair, not counted
             continue
         # Fuzzy dedupe: the webhook twin may group episodes differently or
         # carry the same downloadId under another key shape.
@@ -335,7 +388,7 @@ def _reconcile_arr(
             if store.has_event_near("media.deleted", media_id, occurred):
                 continue
         event.received_at = now
-        if correlator.apply(event):
+        if applier.apply(event):
             recovered += 1
     return recovered
 
@@ -345,7 +398,7 @@ def _reconcile_arr(
 
 def _reconcile_tautulli(
     store: Store,
-    correlator: Correlator | _NotifyingApplier,
+    applier: _NotifyingApplier,
     source: str,
     client,
     window_start: datetime,
@@ -358,7 +411,9 @@ def _reconcile_tautulli(
         user_key = str(row.get("user_id") or row.get("user") or "unknown")
         rating_key = row.get("rating_key")
         key = f"{source}:watch.completed:{user_key}:{rating_key}"
-        if store.event_key_exists(key):
+        existing = store.get_event_by_key(key)
+        if existing is not None:
+            applier.repair(existing, window_start)  # crash repair, not counted
             continue
         is_episode = row.get("media_type") == "episode"
         detail = {}
@@ -395,6 +450,6 @@ def _reconcile_tautulli(
             else None,
             attrs={"backfilled": True},
         )
-        if correlator.apply(event):
+        if applier.apply(event):
             recovered += 1
     return recovered
