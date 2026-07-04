@@ -113,6 +113,12 @@ class Store:
                 "SELECT * FROM sources WHERE name = ?", (name,)
             ).fetchone()
 
+    def source_by_id(self, source_id: int) -> sqlite3.Row | None:
+        with self._lock:
+            return self._conn.execute(
+                "SELECT * FROM sources WHERE id = ?", (source_id,)
+            ).fetchone()
+
     # -- raw events + ingest outbox -------------------------------------------
 
     def archive_raw(
