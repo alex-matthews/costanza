@@ -15,7 +15,7 @@ from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.interval import IntervalTrigger
 from fastapi import FastAPI
 
-from . import metrics
+from . import __version__, metrics
 from .api import build_api_router, build_ops_router
 from .clients import build_clients
 from .config import Config, load_config
@@ -163,7 +163,7 @@ def create_app(config: Config | None = None) -> FastAPI:
                 await rt.notifier.stop()
             rt.store.close()
 
-    app = FastAPI(title="costanza", version="0.1.0", lifespan=lifespan)
+    app = FastAPI(title="costanza", version=__version__, lifespan=lifespan)
     app.include_router(
         build_ingest_router(
             SourceRegistry(rt.config.routing),
