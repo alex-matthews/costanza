@@ -1,0 +1,34 @@
+{
+  "events": [
+    {
+      "source": "sonarr",
+      "source_event_key": "sonarr:media.grabbed:280619:S01E01:SABnzbd_nzo_a1b2c3d4",
+      "origin": "webhook",
+      "type": "media.grabbed",
+      "media": {
+        "tmdb_id": 63639,
+        "tvdb_id": 280619,
+        "imdb_id": "tt3230854",
+        "title": "The Expanse",
+        "year": 2015,
+        "kind": "episode",
+        "detail": {
+          "season": 1,
+          "episode": 1
+        }
+      },
+      "attrs": {
+        "episodes": [
+          {
+            "season": 1,
+            "episode": 1,
+            "title": "Dulcinea"
+          }
+        ],
+        "quality": "WEBDL-1080p",
+        "size": 3279812345,
+        "indexer": "nzbgeek"
+      }
+    }
+  ]
+}

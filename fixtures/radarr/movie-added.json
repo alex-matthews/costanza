@@ -1,0 +1,15 @@
+{
+  "movie": {
+    "id": 690,
+    "title": "Sicario",
+    "year": 2015,
+    "releaseDate": "2015-09-17",
+    "folderPath": "/movies/Sicario (2015)",
+    "tmdbId": 273481,
+    "imdbId": "tt3397884"
+  },
+  "addMethod": "manual",
+  "eventType": "MovieAdded",
+  "instanceName": "Radarr",
+  "applicationUrl": ""
+}

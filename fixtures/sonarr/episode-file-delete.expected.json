@@ -1,0 +1,26 @@
+{
+  "events": [
+    {
+      "source": "sonarr",
+      "source_event_key": "sonarr:media.deleted:file:280619:S01E01:7801",
+      "origin": "webhook",
+      "type": "media.deleted",
+      "media": {
+        "tmdb_id": 63639,
+        "tvdb_id": 280619,
+        "imdb_id": "tt3230854",
+        "title": "The Expanse",
+        "year": 2015,
+        "kind": "episode",
+        "detail": {
+          "season": 1,
+          "episode": 1
+        }
+      },
+      "attrs": {
+        "scope": "file",
+        "reason": "upgrade"
+      }
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "events": [
+    {
+      "source": "seerr",
+      "source_event_key": "seerr:request.created:RQ-2001",
+      "origin": "webhook",
+      "type": "request.created",
+      "media": {
+        "tmdb_id": 63639,
+        "tvdb_id": 280619,
+        "title": "The Expanse",
+        "year": 2015,
+        "kind": "series",
+        "detail": {}
+      },
+      "user": {
+        "display": "bob",
+        "provider": "seerr",
+        "external_id": "bob"
+      },
+      "attrs": {
+        "request_id": "RQ-2001",
+        "requested_seasons": "1, 2"
+      }
+    }
+  ]
+}

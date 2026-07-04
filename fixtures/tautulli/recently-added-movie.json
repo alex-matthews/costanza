@@ -1,0 +1,16 @@
+{
+  "event": "recently_added",
+  "media_type": "movie",
+  "title": "Arrival",
+  "year": "2016",
+  "tmdbId": "157336",
+  "summary": "A linguist works to communicate with aliens after they land in 12 different locations around the globe.",
+  "poster_url": "https://example.invalid/arrival.jpg",
+  "plex_username": "alice",
+  "library_name": "Movies",
+  "plex_url": "https://plex.example.com/library/metadata/157336",
+  "imdb_url": "https://www.imdb.com/title/tt2543164/",
+  "themoviedb_url": "https://www.themoviedb.org/movie/157336",
+  "quality_profile": "4K",
+  "video_resolution": "2160p"
+}

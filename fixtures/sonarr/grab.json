@@ -1,0 +1,39 @@
+{
+  "series": {
+    "id": 42,
+    "title": "The Expanse",
+    "titleSlug": "the-expanse",
+    "path": "/tv/The Expanse",
+    "tvdbId": 280619,
+    "tvMazeId": 1825,
+    "tmdbId": 63639,
+    "imdbId": "tt3230854",
+    "type": "standard",
+    "year": 2015
+  },
+  "episodes": [
+    {
+      "id": 3010,
+      "episodeNumber": 1,
+      "seasonNumber": 1,
+      "title": "Dulcinea",
+      "airDate": "2015-12-14",
+      "airDateUtc": "2015-12-15T03:00:00Z",
+      "seriesId": 42
+    }
+  ],
+  "release": {
+    "quality": "WEBDL-1080p",
+    "qualityVersion": 1,
+    "releaseGroup": "GROUP",
+    "releaseTitle": "The.Expanse.S01E01.1080p.WEB-DL.DD5.1.H.264-GROUP",
+    "indexer": "nzbgeek",
+    "size": 3279812345
+  },
+  "downloadClient": "SABnzbd",
+  "downloadClientType": "SABnzbd",
+  "downloadId": "SABnzbd_nzo_a1b2c3d4",
+  "eventType": "Grab",
+  "instanceName": "Sonarr",
+  "applicationUrl": ""
+}

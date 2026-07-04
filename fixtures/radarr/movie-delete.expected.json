@@ -1,0 +1,22 @@
+{
+  "events": [
+    {
+      "source": "radarr",
+      "source_event_key": "radarr:media.deleted:movie:526896",
+      "origin": "webhook",
+      "type": "media.deleted",
+      "media": {
+        "tmdb_id": 526896,
+        "imdb_id": "tt5108870",
+        "title": "Morbius",
+        "year": 2022,
+        "kind": "movie",
+        "detail": {}
+      },
+      "attrs": {
+        "scope": "movie",
+        "deleted_files": true
+      }
+    }
+  ]
+}

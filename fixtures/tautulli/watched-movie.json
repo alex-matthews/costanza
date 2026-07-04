@@ -1,0 +1,14 @@
+{
+  "event": "watched",
+  "media_type": "movie",
+  "title": "Arrival",
+  "year": "2016",
+  "tmdbId": "329865",
+  "rating_key": "51234",
+  "session_key": "87",
+  "plex_username": "alice",
+  "user_id": "12",
+  "player": "Living Room TV",
+  "video_resolution": "2160p",
+  "progress_percent": "91"
+}

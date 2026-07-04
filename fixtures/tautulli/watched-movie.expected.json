@@ -1,0 +1,26 @@
+{
+  "events": [
+    {
+      "source": "tautulli",
+      "source_event_key": "tautulli:watch.completed:12:51234",
+      "origin": "webhook",
+      "type": "watch.completed",
+      "media": {
+        "tmdb_id": 329865,
+        "title": "Arrival",
+        "year": 2016,
+        "kind": "movie",
+        "detail": {}
+      },
+      "user": {
+        "display": "alice",
+        "provider": "tautulli",
+        "external_id": "12"
+      },
+      "attrs": {
+        "player": "Living Room TV",
+        "video_resolution": "2160p"
+      }
+    }
+  ]
+}

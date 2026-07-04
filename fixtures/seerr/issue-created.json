@@ -1,0 +1,20 @@
+{
+  "notification_type": "ISSUE_CREATED",
+  "event": "New Video Issue Reported",
+  "subject": "Arrival (2016)",
+  "message": "Video is out of sync.",
+  "image": "https://image.tmdb.org/t/p/w600_and_h900_bestv2/arrival.jpg",
+  "media": {
+    "media_type": "movie",
+    "status": "AVAILABLE",
+    "status4k": "UNKNOWN",
+    "tmdbId": "329865"
+  },
+  "request": null,
+  "issue": {
+    "issue_id": "7",
+    "issue_type": "VIDEO",
+    "issue_status": "OPEN",
+    "reportedBy_username": "bob"
+  }
+}

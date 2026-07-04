@@ -1,0 +1,22 @@
+{
+  "events": [
+    {
+      "source": "radarr",
+      "source_event_key": "radarr:media.deleted:file:693134:1290",
+      "origin": "webhook",
+      "type": "media.deleted",
+      "media": {
+        "tmdb_id": 693134,
+        "imdb_id": "tt15239678",
+        "title": "Dune: Part Two",
+        "year": 2024,
+        "kind": "movie",
+        "detail": {}
+      },
+      "attrs": {
+        "scope": "file",
+        "reason": "upgrade"
+      }
+    }
+  ]
+}

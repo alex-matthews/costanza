@@ -1,0 +1,34 @@
+{
+  "movie": {
+    "id": 512,
+    "title": "Dune: Part Two",
+    "year": 2024,
+    "releaseDate": "2024-02-27",
+    "folderPath": "/movies/Dune Part Two (2024)",
+    "tmdbId": 693134,
+    "imdbId": "tt15239678"
+  },
+  "remoteMovie": {
+    "tmdbId": 693134,
+    "imdbId": "tt15239678",
+    "title": "Dune: Part Two",
+    "year": 2024
+  },
+  "movieFile": {
+    "id": 1301,
+    "relativePath": "Dune.Part.Two.2024.2160p.BluRay.REMUX.HEVC.DV.TrueHD.7.1.Atmos-GROUP.mkv",
+    "path": "/downloads/Dune.Part.Two.2024.2160p.BluRay.REMUX.HEVC.DV.TrueHD.7.1.Atmos-GROUP.mkv",
+    "quality": "Remux-2160p",
+    "qualityVersion": 1,
+    "releaseGroup": "GROUP",
+    "sceneName": "Dune.Part.Two.2024.2160p.BluRay.REMUX.HEVC.DV.TrueHD.7.1.Atmos-GROUP",
+    "size": 63021182976
+  },
+  "isUpgrade": true,
+  "downloadClient": "qBittorrent",
+  "downloadClientType": "qBittorrent",
+  "downloadId": "F63A2E9C11B8D42F0A6E9A2B1C3D4E5F60718293",
+  "eventType": "Download",
+  "instanceName": "Radarr",
+  "applicationUrl": ""
+}

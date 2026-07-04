@@ -1,0 +1,23 @@
+{
+  "events": [
+    {
+      "source": "radarr",
+      "source_event_key": "radarr:media.imported:329865:SABnzbd_nzo_kjb2cd8x",
+      "origin": "webhook",
+      "type": "media.imported",
+      "media": {
+        "tmdb_id": 329865,
+        "imdb_id": "tt2543164",
+        "title": "Arrival",
+        "year": 2016,
+        "kind": "movie",
+        "detail": {}
+      },
+      "attrs": {
+        "quality": "WEBDL-2160p",
+        "size": 15832481234,
+        "release_group": "GROUP"
+      }
+    }
+  ]
+}

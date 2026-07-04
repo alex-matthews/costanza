@@ -1,0 +1,23 @@
+{
+  "notification_type": "MEDIA_PENDING",
+  "event": "Request Pending Approval",
+  "subject": "The Expanse (2015)",
+  "message": "A new request is pending approval.",
+  "image": "https://image.tmdb.org/t/p/w600_and_h900_bestv2/expanse.jpg",
+  "media": {
+    "media_type": "tv",
+    "status": "PENDING",
+    "status4k": "UNKNOWN",
+    "tmdbId": "63639",
+    "tvdbId": "280619"
+  },
+  "request": {
+    "request_id": "RQ-2001",
+    "requestedBy_username": "bob",
+    "requestedBy_email": "bob@example.invalid",
+    "requestedBy_settings_discordId": "987654321"
+  },
+  "extra": [
+    { "name": "Requested Seasons", "value": "1, 2" }
+  ]
+}

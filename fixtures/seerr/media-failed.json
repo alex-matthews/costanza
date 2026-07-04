@@ -1,0 +1,19 @@
+{
+  "notification_type": "MEDIA_FAILED",
+  "event": "Movie Request Failed",
+  "subject": "Arrival (2016)",
+  "message": "Movie failed to download.",
+  "image": "https://image.tmdb.org/t/p/w600_and_h900_bestv2/arrival.jpg",
+  "media": {
+    "media_type": "movie",
+    "status": "FAILED",
+    "status4k": "UNKNOWN",
+    "tmdbId": "329865"
+  },
+  "request": {
+    "request_id": "RQ-3001",
+    "requestedBy_username": "alice",
+    "requestedBy_email": "alice@example.invalid",
+    "requestedBy_settings_discordId": "123456789"
+  }
+}

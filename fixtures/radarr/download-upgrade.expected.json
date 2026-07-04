@@ -1,0 +1,23 @@
+{
+  "events": [
+    {
+      "source": "radarr",
+      "source_event_key": "radarr:media.upgraded:693134:F63A2E9C11B8D42F0A6E9A2B1C3D4E5F60718293",
+      "origin": "webhook",
+      "type": "media.upgraded",
+      "media": {
+        "tmdb_id": 693134,
+        "imdb_id": "tt15239678",
+        "title": "Dune: Part Two",
+        "year": 2024,
+        "kind": "movie",
+        "detail": {}
+      },
+      "attrs": {
+        "quality": "Remux-2160p",
+        "size": 63021182976,
+        "release_group": "GROUP"
+      }
+    }
+  ]
+}

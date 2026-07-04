@@ -1,0 +1,13 @@
+{
+  "events": [
+    {
+      "source": "seerr",
+      "source_event_key": "seerr:unknown:ISSUE_CREATED:e36f198e7d5bb5a8",
+      "origin": "webhook",
+      "type": "source.unknown",
+      "attrs": {
+        "payload_kind": "ISSUE_CREATED"
+      }
+    }
+  ]
+}

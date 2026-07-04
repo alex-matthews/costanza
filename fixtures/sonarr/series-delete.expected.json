@@ -1,0 +1,21 @@
+{
+  "events": [
+    {
+      "source": "sonarr",
+      "source_event_key": "sonarr:media.deleted:series:999901",
+      "origin": "webhook",
+      "type": "media.deleted",
+      "media": {
+        "tvdb_id": 999901,
+        "title": "Rings of Power Reaction Compilations",
+        "year": 2022,
+        "kind": "series",
+        "detail": {}
+      },
+      "attrs": {
+        "scope": "series",
+        "deleted_files": true
+      }
+    }
+  ]
+}
