@@ -96,7 +96,7 @@ def _build_scheduler(rt: Runtime) -> AsyncIOScheduler:
 
     async def reconcile_job() -> None:
         await asyncio.to_thread(
-            run_reconcile, rt.store, rt.correlator, routing, rt.clients
+            run_reconcile, rt.store, rt.correlator, routing, rt.clients, rt.kill
         )
 
     async def digest_job() -> None:

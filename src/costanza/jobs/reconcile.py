@@ -18,6 +18,8 @@ from datetime import datetime, timedelta
 
 from ..config import RoutingConfig
 from ..correlate import Correlator
+from ..notify.limits import KillSwitch
+from ..notify.pipeline import enqueue_for_event
 from ..logging import get_logger
 from ..normalize.common import to_int
 from ..schemas import CanonicalEvent, MediaRef, UserRef, utcnow
@@ -59,15 +61,46 @@ def _parse_dt(value: str | None) -> datetime | None:
         return None
 
 
+class _NotifyingApplier:
+    """Correlator wrapper that fans newly inserted events out to the
+    notification ledger — reconcile-synthesized events (including
+    reconcile.gap markers) go through the same allowlist as webhooks."""
+
+    def __init__(
+        self,
+        correlator: Correlator,
+        store: Store,
+        routing: RoutingConfig,
+        kill_switch: KillSwitch | None,
+    ):
+        self._correlator = correlator
+        self._store = store
+        self._routing = routing
+        self._kill = kill_switch
+
+    def apply(self, event: CanonicalEvent) -> bool:
+        inserted = self._correlator.apply(event)
+        if inserted and self._kill is not None:
+            enqueue_for_event(self._store, self._routing, self._kill, event)
+        return inserted
+
+
 def run_reconcile(
     store: Store,
     correlator: Correlator,
     routing: RoutingConfig,
     clients: dict[str, object],
+    kill_switch: KillSwitch | None = None,
     now: datetime | None = None,
 ) -> dict[str, dict]:
-    """Reconcile every configured source that has a client. Returns a summary."""
+    """Reconcile every configured source that has a client. Returns a summary.
+
+    With a kill_switch provided, recovered events route through the
+    notification allowlist; without one (tests, ad-hoc runs) they are
+    stored silently.
+    """
     now = now or utcnow()
+    applier = _NotifyingApplier(correlator, store, routing, kill_switch)
     summary: dict[str, dict] = {}
     for source in routing.sources:
         client = clients.get(source.name)
@@ -77,14 +110,14 @@ def run_reconcile(
         window_start = _parse_dt(cursor.get("last_run")) or (now - DEFAULT_LOOKBACK)
         try:
             if source.kind == "seerr":
-                recovered = _reconcile_seerr(store, correlator, source.name, client, now)
+                recovered = _reconcile_seerr(store, applier, source.name, client, now)
             elif source.kind in ("radarr", "sonarr"):
                 recovered = _reconcile_arr(
-                    store, correlator, source.name, client, window_start, now
+                    store, applier, source.name, client, window_start, now
                 )
             elif source.kind == "tautulli":
                 recovered = _reconcile_tautulli(
-                    store, correlator, source.name, client, window_start, now
+                    store, applier, source.name, client, window_start, now
                 )
             else:
                 continue
@@ -96,7 +129,7 @@ def run_reconcile(
         gap_marked = False
         if recovered and source.kind in TRANSIENT_KINDS:
             gap_marked = _mark_gap(
-                correlator, source.name, source.kind, window_start, recovered, now
+                applier, source.name, source.kind, window_start, recovered, now
             )
         store.set_cursor(f"reconcile:{source.name}", {"last_run": now.isoformat()}, now)
         summary[source.name] = {"recovered": recovered, "gap_marked": gap_marked}
@@ -106,7 +139,7 @@ def run_reconcile(
 
 
 def _mark_gap(
-    correlator: Correlator,
+    correlator: Correlator | _NotifyingApplier,
     source_name: str,
     source_kind: str,
     window_start: datetime,
@@ -189,7 +222,7 @@ def _seerr_expected(source: str, request: dict) -> list[CanonicalEvent]:
 
 
 def _reconcile_seerr(
-    store: Store, correlator: Correlator, source: str, client, now: datetime
+    store: Store, correlator: Correlator | _NotifyingApplier, source: str, client, now: datetime
 ) -> int:
     recovered = 0
     for request in client.get_requests():
@@ -273,7 +306,7 @@ def _arr_record_event(source: str, record: dict) -> CanonicalEvent | None:
 
 def _reconcile_arr(
     store: Store,
-    correlator: Correlator,
+    correlator: Correlator | _NotifyingApplier,
     source: str,
     client,
     window_start: datetime,
@@ -312,7 +345,7 @@ def _reconcile_arr(
 
 def _reconcile_tautulli(
     store: Store,
-    correlator: Correlator,
+    correlator: Correlator | _NotifyingApplier,
     source: str,
     client,
     window_start: datetime,

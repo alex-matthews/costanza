@@ -5,11 +5,11 @@ external system exists in this codebase (grep-enforced in tests).
 """
 
 from .arr import ArrClient
-from .base import ReadOnlyClient
+from .base import ClientError, ReadOnlyClient
 from .seerr import SeerrClient
 from .tautulli import TautulliClient
 
-__all__ = ["ArrClient", "ReadOnlyClient", "SeerrClient", "TautulliClient"]
+__all__ = ["ArrClient", "ClientError", "ReadOnlyClient", "SeerrClient", "TautulliClient"]
 
 
 def build_clients(routing, kinds=("seerr", "radarr", "sonarr", "tautulli")) -> dict:

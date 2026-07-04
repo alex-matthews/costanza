@@ -46,8 +46,13 @@ def build_processor(store: Store, correlator: Correlator, config: Config, kill: 
         events = normalize(source_row["name"], source_row["kind"], payload, watch)
         for event in events:
             event.received_at = received_at
-            if correlator.apply(event):
-                enqueue_for_event(store, config.routing, kill, event)
+            correlator.apply(event)
+            # Enqueue even for deduped events: a crash between the event
+            # insert and this point leaves the outbox row pending, and the
+            # retry must repair the missing ledger rows. UNIQUE(event_key,
+            # channel) makes this a no-op when the rows already exist
+            # (including already-sent ones), so exactly-once holds.
+            enqueue_for_event(store, config.routing, kill, event)
 
     return process
 

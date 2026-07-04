@@ -2,8 +2,13 @@
 
 `Correlator.apply` is the single write path for canonical events: resolve
 media -> resolve user -> insert (idempotent on source_event_key) -> update
-the request-chain timeline spine. Returns True only when the event was new,
-which is what gates notification fan-out (dedupe = exactly-once notify).
+the request-chain timeline spine. Returns True only when the event was new.
+
+Crash safety: the insert, the chain update, and the caller's notification
+enqueue are separate SQLite transactions, so a crash can land between
+them. apply is therefore *idempotent as a whole*: re-processing a deduped
+event still runs the chain advancement (forward-only, see _STATE_RANK) so
+retries repair whatever side effects the crash skipped.
 """
 
 from __future__ import annotations
@@ -27,6 +32,18 @@ _CHAIN_STATES = {
 }
 _CLOSING_STATES = ("declined", "available")
 
+# Lifecycle ordering: a chain only moves forward. This makes _advance_chain
+# safe to re-run for deduped events (crash-recovery reprocessing) and stops
+# out-of-order webhook delivery from regressing a chain (e.g. a
+# late-delivered request.created after approval).
+_STATE_RANK = {
+    "requested": 0,
+    "approved": 1,
+    "partially_available": 2,
+    "available": 3,
+    "declined": 3,
+}
+
 
 class Correlator:
     def __init__(self, store: Store):
@@ -48,14 +65,16 @@ class Correlator:
         if event.received_at is None:
             event.received_at = utcnow()
         inserted = store.insert_event(event, source_row["id"])
-        if not inserted:
+        if inserted:
+            metrics.EVENTS_STORED.labels(type=event.type, origin=event.origin).inc()
+        else:
             metrics.EVENTS_DEDUPED.labels(source=event.source).inc()
-            return False
-        metrics.EVENTS_STORED.labels(type=event.type, origin=event.origin).inc()
 
+        # Runs for deduped events too: idempotent repair of a chain update
+        # lost to a crash between the event insert and this step.
         if event.type in _CHAIN_STATES:
             self._advance_chain(event)
-        return True
+        return inserted
 
     # -- request chains -------------------------------------------------------
 
@@ -91,6 +110,15 @@ class Correlator:
             log.info(
                 "event for closed chain ignored",
                 chain_id=chain["id"],
+                event_key=event.source_event_key,
+            )
+            return
+        if _STATE_RANK.get(state, 0) < _STATE_RANK.get(chain["state"], 0):
+            log.info(
+                "stale chain transition ignored",
+                chain_id=chain["id"],
+                current=chain["state"],
+                proposed=state,
                 event_key=event.source_event_key,
             )
             return

@@ -144,7 +144,12 @@ class Store:
             ).fetchone()
 
     def enqueue_outbox(
-        self, raw_event_id: str, *, dead: bool = False, error: str | None = None
+        self,
+        raw_event_id: str,
+        *,
+        dead: bool = False,
+        error: str | None = None,
+        now: datetime | None = None,
     ) -> str:
         outbox_id = new_id()
         with self._lock, self._conn:
@@ -155,7 +160,7 @@ class Store:
                     outbox_id,
                     raw_event_id,
                     "dead" if dead else "pending",
-                    None if dead else _iso(_now()),
+                    None if dead else _iso(now or _now()),
                     error,
                 ),
             )
@@ -205,8 +210,18 @@ class Store:
             ).fetchone()
         return row["n"]
 
-    def prune(self, retention_days: int, now: datetime | None = None) -> tuple[int, int]:
-        """Delete raw events older than retention and their processed outbox rows."""
+    REDACTED_BODY = '{"redacted": "raw payload removed after retention period"}'
+
+    def prune(self, retention_days: int, now: datetime | None = None) -> tuple[int, int, int]:
+        """Enforce raw-payload retention (OQ-7). Returns (pruned, done, redacted).
+
+        Raw rows referenced by done outbox rows are deleted outright. Raw
+        rows kept alive past retention by dead (or stuck-pending) outbox
+        references keep their diagnostics metadata — timestamps, source,
+        last_error — but have their payload body and archived headers
+        redacted, so sensitive webhook content never outlives the
+        configured window.
+        """
         cutoff = _iso((now or _now()) - timedelta(days=retention_days))
         with self._lock, self._conn:
             done = self._conn.execute(
@@ -219,7 +234,12 @@ class Store:
                 " (SELECT raw_event_id FROM outbox)",
                 (cutoff,),
             ).rowcount
-        return pruned, done
+            redacted = self._conn.execute(
+                "UPDATE raw_events SET body_json = ?, headers_subset = '{}'"
+                " WHERE received_at < ? AND body_json != ?",
+                (self.REDACTED_BODY, cutoff, self.REDACTED_BODY),
+            ).rowcount
+        return pruned, done, redacted
 
     # -- media identity --------------------------------------------------------
 

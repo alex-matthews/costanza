@@ -109,7 +109,7 @@ def test_outbox_worker_success_and_retry_and_dead(store, routing, now):
     store.sync_sources(routing.sources)
     sid = store.source_by_name("radarr")["id"]
     raw_id = store.archive_raw(sid, {}, '{"ok": true}', now)
-    store.enqueue_outbox(raw_id)
+    store.enqueue_outbox(raw_id, now=now)
 
     seen = []
     handled = process_outbox_once(store, lambda raw: seen.append(raw["id"]), now=now)
@@ -119,7 +119,7 @@ def test_outbox_worker_success_and_retry_and_dead(store, routing, now):
 
     # Failing processor: retries with backoff, then dead-letters.
     bad_raw = store.archive_raw(sid, {}, "{}", now)
-    store.enqueue_outbox(bad_raw)
+    store.enqueue_outbox(bad_raw, now=now)
 
     def boom(raw):
         raise RuntimeError("normalizer exploded")
@@ -134,6 +134,6 @@ def test_outbox_worker_success_and_retry_and_dead(store, routing, now):
     assert "normalizer exploded" in dead["last_error"]
     # A poisoned payload never blocks the queue for later arrivals.
     ok_raw = store.archive_raw(sid, {}, "{}", t)
-    store.enqueue_outbox(ok_raw)
+    store.enqueue_outbox(ok_raw, now=t)
     assert process_outbox_once(store, lambda raw: None, now=t) == 1
     assert store.outbox_backlog() == 0

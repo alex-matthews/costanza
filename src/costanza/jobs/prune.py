@@ -11,8 +11,10 @@ from ..store import Store
 log = get_logger(__name__)
 
 
-def run_prune(store: Store, retention_days: int, now: datetime | None = None) -> tuple[int, int]:
-    pruned, outbox_done = store.prune(retention_days, now)
+def run_prune(
+    store: Store, retention_days: int, now: datetime | None = None
+) -> tuple[int, int, int]:
+    pruned, outbox_done, redacted = store.prune(retention_days, now)
     log.info("raw archive pruned", raw_rows=pruned, outbox_rows=outbox_done,
-             retention_days=retention_days)
-    return pruned, outbox_done
+             redacted_rows=redacted, retention_days=retention_days)
+    return pruned, outbox_done, redacted

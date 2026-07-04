@@ -68,7 +68,7 @@ def _events(store, **kwargs):
 
 def test_reconcile_seerr_synthesizes_missing_lifecycle(store, routing, correlator, now):
     clients = {"seerr": FakeSeerr(load_fixture("reconcile", "seerr-requests.json")["results"])}
-    summary = run_reconcile(store, correlator, routing, clients, now)
+    summary = run_reconcile(store, correlator, routing, clients, now=now)
     # Request 555: created+approved+available; 556: created+declined.
     assert summary["seerr"] == {"recovered": 5, "gap_marked": False}
     for key in (
@@ -95,8 +95,8 @@ def test_reconcile_seerr_synthesizes_missing_lifecycle(store, routing, correlato
 
 def test_reconcile_seerr_is_idempotent_and_quiet_when_current(store, routing, correlator, now):
     clients = {"seerr": FakeSeerr(load_fixture("reconcile", "seerr-requests.json")["results"])}
-    run_reconcile(store, correlator, routing, clients, now)
-    summary = run_reconcile(store, correlator, routing, clients, now + timedelta(hours=1))
+    run_reconcile(store, correlator, routing, clients, now=now)
+    summary = run_reconcile(store, correlator, routing, clients, now=now + timedelta(hours=1))
     assert summary["seerr"] == {"recovered": 0, "gap_marked": False}
 
 
@@ -109,7 +109,7 @@ def test_reconcile_radarr_matrix(store, routing, correlator, now):
     _ingest(correlator, "radarr", "download-new.json")
     records = load_fixture("reconcile", "radarr-history.json")["records"]
     clients = {"radarr": FakeArr(records)}
-    summary = run_reconcile(store, correlator, routing, clients, now)
+    summary = run_reconcile(store, correlator, routing, clients, now=now)
     # Recovered: Dune import-upgrade (MISSED123) + Dune file delete. The
     # Arrival records collapse onto the webhook keys.
     assert summary["radarr"]["recovered"] == 2
@@ -135,7 +135,7 @@ def test_reconcile_radarr_delete_guarded_by_near_window(store, routing, correlat
     records = [r for r in load_fixture("reconcile", "radarr-history.json")["records"]
                if r["eventType"] == "movieFileDeleted"]
     clients = {"radarr": FakeArr(records)}
-    summary = run_reconcile(store, correlator, routing, clients, now)
+    summary = run_reconcile(store, correlator, routing, clients, now=now)
     assert summary["radarr"]["recovered"] == 0
     assert len(_events(store, type_="media.deleted")) == 1
 
@@ -146,7 +146,7 @@ def test_reconcile_sonarr_matrix(store, routing, correlator, now):
     _ingest(correlator, "sonarr", "grab-season-pack.json")
     records = load_fixture("reconcile", "sonarr-history.json")["records"]
     clients = {"sonarr": FakeArr(records)}
-    summary = run_reconcile(store, correlator, routing, clients, now)
+    summary = run_reconcile(store, correlator, routing, clients, now=now)
     # Recovered: MISSEDEP grab + the episode file delete. downloadFailed is
     # flag-only and never synthesized.
     assert summary["sonarr"]["recovered"] == 2
@@ -167,7 +167,7 @@ def test_reconcile_tautulli_matrix(store, routing, correlator, now):
     _ingest(correlator, "tautulli", "watched-movie.json")  # webhook twin of row 7001
     rows = load_fixture("reconcile", "tautulli-history.json")["response"]["data"]["data"]
     clients = {"tautulli": FakeTautulli(rows=rows)}
-    summary = run_reconcile(store, correlator, routing, clients, now)
+    summary = run_reconcile(store, correlator, routing, clients, now=now)
     # Only the missed episode watch is synthesized; watched_status=0 is not
     # durable truth, and no playback.started/stopped are ever synthesized.
     assert summary["tautulli"]["recovered"] == 1
@@ -188,7 +188,7 @@ def test_reconcile_survives_broken_source(store, routing, correlator, now):
 
     rows = load_fixture("reconcile", "tautulli-history.json")["response"]["data"]["data"]
     clients = {"seerr": Exploding(), "tautulli": FakeTautulli(rows=rows)}
-    summary = run_reconcile(store, correlator, routing, clients, now)
+    summary = run_reconcile(store, correlator, routing, clients, now=now)
     assert "error" in summary["seerr"]
     assert summary["tautulli"]["recovered"] == 2
 
@@ -206,7 +206,7 @@ def test_digest_enqueues_once_and_renders(store, routing, correlator):
 
     assert run_digest(store, routing, kill, now) is True
     assert run_digest(store, routing, kill, now) is False  # UNIQUE dedupe
-    rows = store.notifications_by_key(f"digest:{now.date().isoformat()}")
+    rows = store.query("SELECT * FROM notifications WHERE event_key LIKE 'digest:%'")
     assert len(rows) == 1
     assert rows[0]["channel"] == "media-digest"
 
@@ -247,8 +247,8 @@ def test_prune_job(store, routing, now):
     ob = store.enqueue_outbox(old_raw)
     store.outbox_done(ob)
     fresh = store.archive_raw(sid, {}, "{}", now)
-    pruned, done = run_prune(store, 30, now)
-    assert (pruned, done) == (1, 1)
+    pruned, done, redacted = run_prune(store, 30, now)
+    assert (pruned, done, redacted) == (1, 1, 0)
     assert store.get_raw(fresh) is not None
 
 
@@ -284,7 +284,7 @@ def test_reconcile_tautulli_occurred_at_from_history(store, routing, correlator)
     now = datetime(2026, 7, 4, 12, 0, tzinfo=UTC)
     rows = load_fixture("reconcile", "tautulli-history.json")["response"]["data"]["data"]
     clients = {"tautulli": FakeTautulli(rows=rows)}
-    run_reconcile(store, correlator, routing, clients, now)
+    run_reconcile(store, correlator, routing, clients, now=now)
     synth = store.get_event_by_key("tautulli:watch.completed:12:51234")
     # 1782033600 epoch, not `now`.
     assert synth["occurred_at"] != synth["received_at"]

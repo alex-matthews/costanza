@@ -200,9 +200,10 @@ def test_prune_removes_old_raw_and_done_outbox(store, routing, now):
     ob = store.enqueue_outbox(raw_id)
     store.outbox_done(ob)
     fresh = store.archive_raw(sid, {}, "{}", now)
-    pruned, done = store.prune(30, now)
+    pruned, done, redacted = store.prune(30, now)
     assert pruned == 1
     assert done == 1
+    assert redacted == 0
     assert store.get_raw(raw_id) is None
     assert store.get_raw(fresh) is not None
 

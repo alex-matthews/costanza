@@ -72,6 +72,45 @@ open, or a discovery worth carrying into open-questions.
   documented in `fixtures/tautulli/NOTES.md` — configuring Tautulli's
   webhook agent with exactly that template is a rollout step.
 
+## Hardening pass (post-review, 2026-07-05)
+
+- **Client secrets can no longer leak into logs.** All read-client
+  failures are re-raised as a sanitized `ClientError` (path + status
+  only, cause chain severed) because httpx exceptions embed the full
+  URL — for Tautulli that includes `?apikey=...` — and reconcile /
+  identity_sync log `str(exc)` into logs and summaries.
+- **Digest rendering is period-stable.** Ledger keys now encode both
+  period bounds (`digest:{start}|{end}`) and each pending row renders
+  its own window at send time; previously two rows pending across a
+  channel outage would both render the newest cursor window. A 1-hour
+  minimum period guards against scheduler double-fires; legacy
+  date-only keys fall back to the cursor.
+- **Crash-safe event processing.** Event insert, chain update, and
+  notification enqueue are separate SQLite transactions; a crash
+  between them used to strand the event with no notification (retry
+  deduped the insert and skipped fan-out). Reprocessing is now
+  idempotent repair: chain advancement runs for deduped events too
+  (forward-only via a state-rank guard, which also fixes a latent
+  out-of-order regression bug), and the worker enqueues
+  unconditionally — `UNIQUE(event_key, channel)` keeps already-sent
+  rows untouched, preserving exactly-once.
+- **Reconcile now routes through the notification allowlist** (via the
+  same enqueue path, gated by the kill switch) — previously
+  reconcile-synthesized events and `reconcile.gap` markers were stored
+  but never enqueued, making the example `reconcile.gap -> #media-admin`
+  rule dead config and contradicting these notes.
+- **Raw retention now covers dead-lettered payloads.** Prune previously
+  deleted only raws whose outbox rows were done; a dead row (e.g.
+  invalid JSON) pinned its raw body forever. Bodies and archived
+  headers of any raw older than retention are now redacted in place,
+  keeping the diagnostics row (source, timestamps, last_error) intact.
+- **Kill-switch `set_by` is user-supplied text**, not a strong audit
+  identity — acceptable for v1 single-household ops behind the bearer
+  token; revisit if the API ever grows more writers.
+- Repo hygiene: `.dockerignore`, `.editorconfig`, `.gitattributes`
+  added; `Store.enqueue_outbox` accepts an injected clock (fixed a
+  time-of-day-dependent flake in worker tests).
+
 ## Discoveries / candidates for open-questions
 
 - **Seerr request-id consistency (reconcile dedupe):** webhook
