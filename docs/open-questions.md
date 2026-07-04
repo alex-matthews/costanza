@@ -3,11 +3,14 @@
 Only questions that block implementation or materially change scope.
 Each has a recommended default; building to the default is safe.
 
-**OQ-1 — What is `radarr-se`?** Second Radarr instance (standard edition?
-anime? 4K?). Affects normalizer config and whether events need an
-instance-quality dimension in digests.
-*Default:* treat as an independent configured source with its own secret
-and label; no special semantics until told otherwise.
+**OQ-1 — What is `radarr-se`? ANSWERED (2026-07-04).** It is the admin's
+*personal* Radarr instance: not hooked into Seerr, and its Plex library is
+visible only to the admin.
+*Resolution:* **not a configured source in v1.** Household digests and
+feeds must never include its content. Because sources are config-registered
+by name, adding it later (e.g. for an admin-only channel) is a pure config
+change; if that happens, its events must be routable away from household
+channels.
 
 **OQ-2 — Discord channel topology.** One feed channel vs
 feed + digest + admin.

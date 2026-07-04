@@ -98,7 +98,8 @@ events, media, identity, ledger, signals ([ADR-0002](adr/0002-durable-store-not-
 ## Eventing / webhook model
 
 - **Inbound:** `POST /webhooks/{source}` per configured source instance
-  (`seerr`, `radarr`, `radarr-se`, `sonarr`, `tautulli`, later `bazarr`).
+  (v1: `seerr`, `radarr`, `sonarr`, `tautulli`; later e.g. `bazarr` or a
+  second Arr instance — registration is config-only by design).
   Shared-secret per source (header token; HMAC where the source supports
   it). Handler: verify → store raw → 202. Normalization/correlation happen
   off the request path via a SQLite-backed outbox, so a bad payload never

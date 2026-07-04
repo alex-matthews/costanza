@@ -71,8 +71,10 @@ history, identity, signals, votes, protections) — things no neighbor stores.
 ## Costanza vs Radarr / Sonarr / Bazarr
 
 - **Arrs own:** acquisition, quality profiles, file management, disk truth.
-- **Costanza:** ingests grab/import/upgrade/delete/health webhooks (both
-  `radarr` and `radarr-se` as distinct configured sources); polls read-only
+- **Costanza:** ingests grab/import/upgrade/delete/health webhooks from
+  config-registered instances — v1 configures `radarr` only; `radarr-se`
+  is the admin's personal instance and stays out of household scope
+  (OQ-1), addable later by config alone; polls read-only
   APIs for library snapshots, disk stats, and reconciliation. No writes in
   any currently planned phase — lifecycle writes go through Maintainerr,
   request writes through Seerr.

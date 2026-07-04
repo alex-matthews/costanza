@@ -15,9 +15,8 @@ is execution, not redesign.
 3. [docs/architecture.md](architecture.md) — especially the reconciliation
    guarantees matrix and the eventing/idempotency rules.
 4. [docs/open-questions.md](open-questions.md) — **the recommended defaults
-   are binding.** OQ-6 is already answered. OQ-1 (`radarr-se`) is
-   unresolved: treat it as an independent configured Radarr source with its
-   own name and secret, no special semantics.
+   are binding.** OQ-1 and OQ-6 are already answered; nothing is left that
+   blocks the build.
 5. [docs/system-boundaries.md](system-boundaries.md) and
    [docs/capability-map.md](capability-map.md) — for scope arbitration when
    you're tempted to add something.
@@ -26,9 +25,12 @@ is execution, not redesign.
 
 Tiers 0–1 from ADR-0006 — observe and notify:
 
-- Webhook ingestion for sources `seerr`, `radarr`, `radarr-se`, `sonarr`,
-  `tautulli`: per-source shared-secret auth, body-size caps, raw archive,
-  SQLite-backed outbox, fast 202.
+- Webhook ingestion for sources `seerr`, `radarr`, `sonarr`, `tautulli`:
+  per-source shared-secret auth, body-size caps, raw archive,
+  SQLite-backed outbox, fast 202. Sources are **config-registered by
+  name** — `radarr-se` (a personal, non-Seerr Radarr instance) is
+  deliberately NOT configured in v1, and adding a second Arr instance
+  later must be a pure config change, no code change.
 - Per-source normalizers → the canonical event schema in handoff.md,
   including `source.unknown` for unrecognized payloads (keep, never drop).
 - Correlation: media identity (tmdb/tvdb/imdb → `media`), household
@@ -73,8 +75,11 @@ Tiers 0–1 from ADR-0006 — observe and notify:
 5. **Core never imports `discord.py`**; everything channel-shaped goes
    through the notifier port (ADR-0001).
 6. Webhook handlers never parse beyond JSON validity on the request path;
-   normalization happens off-path via the outbox. An unparseable payload
-   is archived + logged, never 5xx'd back to the source after acceptance.
+   normalization happens off-path via the outbox. After source auth and
+   body-size checks pass, **always archive the raw payload and return
+   202**; invalid JSON becomes a raw archived failure / dead outbox item
+   surfaced in admin diagnostics — never a source-facing 4xx/5xx that
+   creates a retry storm.
 7. No web UI, no votes/signals writers (the `signals` table may exist,
    empty), no subtitle features, no recommendation code.
 

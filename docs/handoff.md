@@ -19,7 +19,7 @@ costanza/
 │   ├── config.py             # pydantic-settings; env-first; fail-fast
 │   ├── main.py               # wiring: FastAPI app + worker + bot + jobs
 │   ├── ingest/               # webhook routes, source auth, raw archive
-│   │   └── sources.py        # source registry (seerr, radarr, radarr-se, sonarr, tautulli)
+│   │   └── sources.py        # config-registered sources (v1: seerr, radarr, sonarr, tautulli)
 │   ├── normalize/            # per-source payload → CanonicalEvent
 │   │   ├── seerr.py  radarr.py  sonarr.py  tautulli.py
 │   ├── correlate/            # media identity resolution, timelines,
@@ -64,8 +64,8 @@ costanza/
 ```jsonc
 {
   "id": "uuid7",
-  "source": "radarr-se",              // configured instance name
-  "source_event_key": "radarr-se:Download:movie:1234:2026-07-04T…", // idempotency
+  "source": "radarr",                 // configured instance name
+  "source_event_key": "radarr:Download:movie:1234:2026-07-04T…", // idempotency
   "origin": "webhook | reconcile | manual",
   "type": "request.created | request.approved | request.declined |
            request.available | media.grabbed | media.imported |
@@ -134,7 +134,7 @@ env var additionally forces silence regardless of the stored toggle.
 | System | Inbound | Outbound (read-only) |
 | --- | --- | --- |
 | Seerr | webhook (all request lifecycle) | user list, request list (reconcile/identity) |
-| Radarr + radarr-se | webhook (grab/import/upgrade/delete/health) | movie library, disk stats |
+| Radarr | webhook (grab/import/upgrade/delete/health) | movie library, disk stats |
 | Sonarr | webhook (same) | series library |
 | Tautulli | webhook (playback/watched) | history API (reconcile/backfill) |
 | Discord | reaction events (recorded to signals only, may slip to v1.x) | bot publishes embeds/digests |
