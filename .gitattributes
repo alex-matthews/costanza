@@ -1,0 +1,6 @@
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+uv.lock -diff linguist-generated=true
+.mise/mise.lock -diff linguist-generated=true
+fixtures/**/*.expected.json linguist-generated=true

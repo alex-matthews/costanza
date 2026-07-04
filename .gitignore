@@ -7,3 +7,4 @@ __pycache__/
 *.db-shm
 dist/
 .env
+.DS_Store
