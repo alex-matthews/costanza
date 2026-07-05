@@ -38,6 +38,9 @@ elsewhere permanently).
 | Capability | Notes |
 | --- | --- |
 | Taste memory / preference profiles | Derived from accumulated interest, votes, vetoes, watches |
+| **Premiere Lobby**: curated upcoming-release proposal cards | TMDB calendar/discover sourcing + deterministic suppression gate (taste-filtered once taste memory exists; conservative franchise/genre matching before); policy-capped cards/week ([domain-model.md](council/domain-model.md), OQ-16) |
+| Deferred interest: "remind us later once reviews mature" | `deferred` proposal state with snapshotted re-surface conditions (review maturity via OQ-15, dates, availability) |
+| Divided-interest playoff (third skin of the decision engine) | When gauging splits the household, the case engine runs a head-to-head/vote-off for acquisition, same machinery as Which Stays ([retention-engine.md](council/retention-engine.md)) |
 | Watch-next scheduling ("what do we watch tonight?") | Kids vote here (OQ-11) |
 | Additional notification channels (ntfy, Apprise, email) | New notifier adapters, no core change |
 | Per-member notification preferences / DM routing | Identity map already supports it |

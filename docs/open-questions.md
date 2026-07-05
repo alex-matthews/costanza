@@ -87,3 +87,21 @@ three; Wrapped posts to the household channel; stats are opt-out with
 gentle defaults, DM-first before any public leaderboard. Genuinely open:
 the household should choose the channel names and the opt-in/opt-out
 stance together.
+
+**OQ-15 — Review-maturity source for deferred proposals** ("remind us
+later once it's had more reviews"). TMDB's `vote_count`/`vote_average`
+ride the existing client for free but skew audience-only and slow to
+accumulate; richer critic aggregation (e.g. OMDb-carried Rotten Tomatoes
+/ Metacritic fields) means a new egress dependency with licensing terms
+to read first.
+*Default:* TMDB thresholds only (e.g. `vote_count ≥ 50`) until someone
+actually misses critic scores; any richer source is its own small ADR.
+
+**OQ-16 — Premiere Lobby cadence + suppression stance.** How many
+unsolicited premiere cards per week is delightful vs noise, and how
+aggressive is the don't-surface-rubbish gate before taste memory exists?
+*Default:* ≤ 2 premiere cards/week (policy cadence, same enforcement as
+case caps); cold-start gate is conservative — only franchise/genre/people
+matches to existing definite-interest and watch history get surfaced,
+suppressions are logged for tuning, and member proposals remain the
+primary Lobby source. The household calibrates by living with it.

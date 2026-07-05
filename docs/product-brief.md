@@ -24,10 +24,17 @@ It is built as two layers of one service:
 
 1. **The Lobby.** Proposal cards — title, poster, why-suggested, who it
    suits, time commitment, likely format — with four buttons: **Definitely
-   Want / Maybe / No / Already Seen**, and a discussion thread. Interest
+   Want / Maybe / No / Already Seen**, and a discussion thread. Cards come
+   from members first, and later (v1.x) from the **Premiere Lobby**: a
+   curated, policy-capped feed of upcoming releases filtered through what
+   the household has loved and flopped — smart enough not to surface what
+   most of the family would call rubbish, honest enough to stay
+   conservative until taste memory has real data. Interest
    accumulates; policy thresholds convert it into action (e.g. one admin
    Definitely-Want → request; two household Definitely-Wants → request;
-   three Maybes → a proper vote; a Maybe stale for 30 days → archive).
+   three Maybes → a proper vote; a Maybe stale for 30 days → archive;
+   "remind us later once reviews land" → a deferred card that returns
+   when its condition is met).
    Thresholds are versioned policy config with provenance — every
    threshold-triggered action records the policy version that fired it
    ([council/policy.md](council/policy.md)).

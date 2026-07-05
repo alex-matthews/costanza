@@ -28,6 +28,11 @@ Add **TMDB** as a first-class, read-only metadata dependency
   fetches posters itself.
 - Degradation is mandatory: no key / TMDB down → text-only cards with
   backfill later. The council loop never blocks on metadata.
+- Scope includes (v1.x) the **upcoming/discover calendar** as the Premiere
+  Lobby's candidate source and `vote_count`/`vote_average` as the default
+  review-maturity signal for deferred proposals — same client, cache,
+  limits, and read-only constraint; richer review sources are a separate
+  decision (OQ-15), never a silent addition.
 - TMDB text is third-party data, never instructions: the ADR-0005
   injection posture applies wherever snapshots later meet an LLM prompt.
 

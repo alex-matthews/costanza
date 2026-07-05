@@ -34,6 +34,11 @@ cadences:
     channel: dm                     # DM-first, never public
   wrapped:
     cron: "0 18 * * 0"
+  premiere_lobby:                   # v1.x (OQ-16); unsolicited cards are
+    max_cards_per_week: 2           # the noisiest thing Costanza can do
+    deferred_max_wait_days: 180     # unmet resurface condition -> archive
+    resurface_default:              # OQ-15: TMDB-only until decided otherwise
+      tmdb_vote_count_gte: 50
 
 execution:                        # see execution.md / ADR-0009
   phase_a_enabled: true           # admin-confirm buttons

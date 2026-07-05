@@ -13,12 +13,19 @@ gets the same discipline as the existing clients.
   errors (TMDB v3 auth passes the key as a query param — exactly the
   Tautulli leak shape, so the sanitized exception path is mandatory, or
   v4 header auth is used and the risk disappears; prefer v4).
-- Endpoints (v1 needs only these):
+- Endpoints (council v1 needs only these):
   - `GET /3/search/multi` — the `/propose` command's title search;
   - `GET /3/movie/{id}` and `GET /3/tv/{id}` (with
     `append_to_response=videos` for the trailer key);
   - image *URLs* assembled from the static config base — Costanza never
     proxies or stores image bytes; Discord fetches poster URLs itself.
+- v1.x adds two read-only surfaces on the same client/cache/limits:
+  - `GET /3/movie/upcoming` + `GET /3/discover/{movie,tv}` (air/release
+    date windows) — the **Premiere Lobby** candidate source;
+  - `vote_count`/`vote_average` from the detail endpoints — the default
+    **review-maturity** signal for deferred-proposal re-surfacing
+    (richer critic/audience sources are OQ-15; each would be a new egress
+    + licensing decision, not a silent addition).
 - Config: `TMDB_API_KEY` via the existing ExternalSecret contract;
   absent key = metadata features degrade (below), never a crash.
 

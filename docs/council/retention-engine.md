@@ -6,6 +6,12 @@ evidence → open a case → collect votes and pleas → persist a reasoned
 outcome. Build it once; the skins differ only in candidate count, vote
 vocabulary, and tone.
 
+The skin pattern is deliberately extensible beyond retention: the
+**divided-interest playoff** (v1.x, capability map) reuses this engine on
+the acquisition side — when gauging splits the household, a case opens
+with the contested titles, votes and pitches instead of pleas, and the
+verdict feeds the proposal machine rather than a retention decision.
+
 ## Pipeline
 
 ```

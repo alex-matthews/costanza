@@ -33,6 +33,16 @@ including Discord user ids.
   tallies, and deadlines live in the store; message/thread ids are
   references; components encode their context in custom_ids so a restart
   or outage loses nothing ("votes pause, history never lost").
+- **Discussion-mining boundary (added 2026-07-05):** free-form message
+  content may be read **only inside proposal/case threads** — spaces where
+  members knowingly talk *to* the council — and only as taste signal for
+  that thread's subject. The bot requests message-content access scoped as
+  narrowly as Discord permits, never joins general channels for reading,
+  and whole-server chat mining is rejected outright: inferring taste from
+  the family's ambient conversation turns the council secretary into an
+  eavesdropper, and no recommendation quality is worth that. Organic
+  discussion outside threads influences Costanza only when a member brings
+  it in (a button press, a `/propose`, a message in the thread).
 
 ## Consequences
 

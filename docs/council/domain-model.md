@@ -20,11 +20,14 @@ members(user_id PK -> users.id,
   -- registry); a users row without a members row cannot vote.
 
 proposals(id PK, media_id -> media.id,
-          proposed_by -> members.user_id,
-          origin ENUM(member, seed, wrapped, watch_debt),
+          proposed_by -> members.user_id NULL,  -- NULL for premiere-sourced
+          origin ENUM(member, seed, wrapped, watch_debt, premiere),
           pitch TEXT,                      -- member's why-suggested
           tmdb_snapshot_json,              -- card facts at proposal time
-          state ENUM(suggested, gauging, voting, decided, archived),
+          state ENUM(suggested, gauging, voting, deferred, decided, archived),
+          resurface_when_json NULL,        -- deferred only: condition snapshot,
+                                           -- e.g. {"tmdb_vote_count_gte": 50,
+                                           --       "not_before": "2026-09-01"}
           opened_at, state_changed_at, decided_at,
           decision_id -> decisions.id NULL,
           thread_ref TEXT)                 -- Discord thread id, nullable
@@ -105,8 +108,12 @@ suggested ──card posted──► gauging ──3 Maybes (policy)──► vo
     │                        │                                          │
     │                        ├─ 2 household DW / 1 admin DW (policy) ───┤
     │                        │            (straight to decided:request) │
-    │                        └─ stale Maybe 30d (policy) ──► archived   ▼
+    │                        ├─ stale Maybe 30d (policy) ──► archived   │
+    │                        └─ "remind us later" ──► deferred          ▼
     └────────── admin veto (public, with reason) ─────────────────► decided
+
+deferred ──resurface_when met (daily sweep)──► gauging (fresh card, warm interest)
+    └───── condition unmet after policy max (default 180d) ──► archived
 ```
 
 - `gauging` collects interest button presses; threshold evaluation runs on
@@ -118,6 +125,23 @@ suggested ──card posted──► gauging ──3 Maybes (policy)──► vo
   (phase A: admin-confirm button; phase B: flagged auto-request).
 - Archived proposals keep their interest rows — a later re-proposal of the
   same media starts from the accumulated picture.
+- **Deferred is a deliberate wait, not lost interest** ("remind us later
+  once it's had more reviews"): the card records a `resurface_when_json`
+  condition — review maturity (e.g. TMDB vote count/score thresholds,
+  OQ-15), a not-before date, or availability — snapshotted at deferral
+  time so a later policy edit never silently changes what was promised.
+  The daily sweep re-opens met conditions into `gauging` with a fresh card
+  and warm interest; conditions still unmet after a policy cap (default
+  180 days) archive with a "let it go?" note rather than waiting forever.
+- `origin=premiere` proposals come from the **Premiere Lobby** (v1.x,
+  capability map): calendar-driven candidates from the TMDB upcoming/
+  discover surfaces, filtered by a deterministic suppression gate before
+  a card is ever posted — franchise/genre matches to existing definite
+  interest and watch history first; taste-memory scoring when it exists
+  ([policy.md](policy.md) caps cards/week; suppressed candidates are
+  logged, never posted). Curation quality is honest about cold start:
+  with no taste history the gate is conservative, and member proposals
+  remain the primary source.
 
 ### Case (one machine, two skins)
 
