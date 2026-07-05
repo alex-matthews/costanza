@@ -61,8 +61,9 @@ council code lands.
   map discipline — no council feature is allowed to weaken a substrate
   test to pass.
 - ADR-0003: no code path that deletes media, in any phase — the write
-  allowlist above is for Seerr create-request (and later downgrade via
-  the same executor discipline) only.
+  allowlist above is for **Seerr create-request only**; downgrade
+  verdicts are report-only, and executing one would require a future ADR
+  naming the system and verb plus its own allowlist change (ADR-0009).
 - The bearer-token API stays read-only (plus the existing kill switch):
   votes arrive attributed through Discord identity or not at all in v1 —
   an unattributed API vote endpoint would bypass the entire authz model.
