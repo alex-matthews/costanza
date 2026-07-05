@@ -1,6 +1,12 @@
-# V1 implementation handoff
+# Substrate implementation record
 
-Everything a build session needs. Scope: Tiers 0–1 only (observe + notify).
+*(Formerly "V1 implementation handoff". This document specified the build
+of what is now the **substrate layer** — ingest, normalize, correlate,
+store, notify, jobs, clients, read API — and remains the accurate record
+of what is implemented. The product on top is the household media
+council: see [product-brief.md](product-brief.md) and
+[council/](council/). Scope of this layer: observe + notify, ADR-0006
+Tiers 0–1.)*
 
 ## Repo structure
 

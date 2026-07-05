@@ -52,11 +52,15 @@ history, identity, signals, votes, protections) — things no neighbor stores.
   user accounts, per-user permissions/quotas, and request state.
 - **Costanza owns:** what happens around requests — correlation to outcomes,
   household communication, interest aggregation.
-- **v1:** webhooks in, read-only API polls for reconciliation and user sync.
-  **v2:** at most two write verbs, both gated: create request (quorum
-  auto-request) and comment/annotate if Seerr supports it. Costanza never
-  approves/denies requests in Seerr on its own (that's admin policy, and
-  partially Resolute's flow for TV).
+- **Substrate:** webhooks in, read-only API polls for reconciliation and
+  user sync. **Council v1:** exactly one write verb — create request —
+  through the staged executor ([ADR-0009](adr/0009-staged-execution.md)):
+  phase A admin-confirm on by default, phase B threshold auto-request
+  behind a flag that ships OFF, hard-capped. Comment/annotate is a later
+  candidate if Seerr supports it. Costanza never approves/denies requests
+  in Seerr on its own (that's admin policy, and partially Resolute's flow
+  for TV) — requests created by Costanza flow through Seerr's own
+  approval pipeline, so Seerr stays the system of record.
 
 ## Costanza vs Plex / Tautulli
 
