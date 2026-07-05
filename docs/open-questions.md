@@ -49,7 +49,13 @@ Seerr/Plex/Discord ids? Pure config data, needed at rollout step 3.
 The council layer extends the same map (members = users + role/weight/
 opt-ins), so this bootstrap is also the council's member registry.
 
-## Council-era questions (defaults adopted 2026-07-05; confirm with the household)
+## Council-era questions
+
+Working defaults were set 2026-07-05 so design could proceed — but the
+household-sensitive ones are **activation gates, not settled
+requirements**: the feature ships built-but-off and turns on only after
+the household actually confirms the stance. A builder implements the
+mechanism; the household owns the switch.
 
 **OQ-9 — Substrate deployment timing.** Deploy the shipped substrate in
 shadow now, or hold everything until council v1?
@@ -63,10 +69,13 @@ ops-fix + deploy first — its deployment forces the Chaski tee decision
 
 **OQ-11 — Council membership mechanics.** Do kids vote? Equal weights?
 Is the admin veto public?
-*Default (adopted, genuinely needs household confirmation):* all mapped
-members vote with weight 1; kids' votes count on watch-next but not
-delete; admin veto is public with a reason — vetoes are taste signals
-too.
+*Working default:* all mapped members vote with weight 1; kids' votes
+count on watch-next but not delete; admin veto is public with a reason —
+vetoes are taste signals too.
+*Activation gate:* retention voting (where kid-vote scope and veto
+publicity actually bite) stays off until the household confirms these —
+this is a family conversation, not an engineering default. The first
+loop's proposal voting can run on the working default.
 
 **OQ-12 — Execution stance for council v1.** Phase A only (admin-confirm
 buttons), or phase B hands-free thresholds behind a flag from day one?
@@ -82,11 +91,13 @@ LLM never publicly scores individual members (ADR-0005 addendum).
 **OQ-14 — Council Discord topology + accountability visibility.** Which
 channels host the Lobby, Court, and Wrapped; are accountability stats
 opt-in or opt-out per member (playful can read as punitive)?
-*Default:* Lobby and Court as dedicated channels beside the existing
-three; Wrapped posts to the household channel; stats are opt-out with
-gentle defaults, DM-first before any public leaderboard. Genuinely open:
-the household should choose the channel names and the opt-in/opt-out
-stance together.
+*Working default:* Lobby and Court as dedicated channels beside the
+existing three; Wrapped posts to the household channel; stats are opt-out
+with gentle defaults, DM-first before any public leaderboard.
+*Activation gate:* accountability and watch-debt features ship built-but-
+OFF; the schema's opt-out defaults are design placeholders, not consent.
+The household chooses channel names and the opt-in/opt-out stance before
+anything accountability-shaped posts or DMs.
 
 **OQ-15 — Review-maturity source for deferred proposals** ("remind us
 later once it's had more reviews"). TMDB's `vote_count`/`vote_average`

@@ -28,9 +28,13 @@ mechanic must survive Discord being down.
   to map you — you're not in the council yet"), the identity is recorded
   as an unmapped observation (existing substrate mechanism), and nothing
   is counted.
-- Role gates read `members.role`: execution-confirm and veto components
-  require `admin`; `delete_candidate` vote buttons are disabled-with-tooltip
-  for `kid` members (their watch-next votes count normally).
+- Role gates read `members.role` and are enforced **server-side on the
+  interaction**, never in the component: Discord components are shared
+  per-message and cannot be disabled per-user, so a kid pressing a
+  `delete_candidate` vote button gets an ephemeral "kids don't vote on
+  deletions (but your watch-next votes count!)" and no recorded vote;
+  execution-confirm and veto interactions re-check `admin` the same way.
+  The button being pressable is cosmetic; the gate is the handler.
 - Weight is copied from `members.vote_weight` at cast time, so later
   weight changes never rewrite history.
 

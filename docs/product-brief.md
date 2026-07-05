@@ -22,10 +22,19 @@ It is built as two layers of one service:
 
 ## The core loops
 
+**The first shippable slice is one loop and nothing else** (capability
+map: "council first loop"): *a member proposes → the household expresses
+interest/votes → an admin confirms with one click → the request lands in
+Seerr → the card shows what happened.* Every loop below beyond that
+slice is second-wave or v1.x, gated on the first loop proving itself in
+the household — the substrate earned trust by shipping small, and the
+council does the same.
+
 1. **The Lobby.** Proposal cards — title, poster, why-suggested, who it
    suits, time commitment, likely format — with four buttons: **Definitely
    Want / Maybe / No / Already Seen**, and a discussion thread. Cards come
-   from members first, and later (v1.x) from the **Premiere Lobby**: a
+   from members (the first loop), and later (v1.x, **not part of the
+   first build**) from the **Premiere Lobby**: a
    curated, policy-capped feed of upcoming releases filtered through what
    the household has loved and flopped — smart enough not to surface what
    most of the family would call rubbish, honest enough to stay
@@ -137,8 +146,9 @@ pause" — never "history lost".
 - **Quality/format advice overlaps Resolute's calibration territory.**
   Costanza limits itself to *library audit* framing (existing files),
   never request-time decisions; a downgrade decided by the council is
-  executed through the same staged executor discipline, never by touching
-  profiles directly.
+  **report-only** — executing one would require a dedicated ADR naming
+  the exact system and verb (ADR-0009 deliberately scopes the executor
+  to Seerr create-request alone).
 - **"Ephemeral state may be enough" is wrong for this scope** — votes,
   reasons, protections, and taste memory exist nowhere else and are
   unreconstructable. See

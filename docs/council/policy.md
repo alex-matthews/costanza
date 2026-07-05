@@ -25,6 +25,8 @@ thresholds:
     default_duration_days: 5
 
 cadences:
+  # [second wave — parsed but nothing reads these until the retention
+  #  engine / accountability features exist; activation-gated per OQ-11/14]
   which_stays:
     max_open_per_week: 1         # deletion theater cap (product-brief)
   media_court:
@@ -34,8 +36,11 @@ cadences:
     channel: dm                     # DM-first, never public
   wrapped:
     cron: "0 18 * * 0"
-  premiere_lobby:                   # v1.x (OQ-16); unsolicited cards are
-    max_cards_per_week: 2           # the noisiest thing Costanza can do
+  # [v1.x — parsed but ignored until the Premiere Lobby ships (OQ-16);
+  #  do NOT implement in the first loop]
+  premiere_lobby:
+    max_cards_per_week: 2           # unsolicited cards are the noisiest
+                                    # thing Costanza can do
     deferred_max_wait_days: 180     # unmet resurface condition -> archive
     resurface_default:              # OQ-15: TMDB-only until decided otherwise
       tmdb_vote_count_gte: 50

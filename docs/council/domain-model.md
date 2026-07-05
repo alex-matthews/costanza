@@ -6,28 +6,45 @@ substrate's event ledger. Council rows *reference* events and media as
 evidence; they never duplicate them. `signals` stays what it is today —
 raw reaction capture, no domain meaning.
 
+**Phase legend — read before building.** The sketch below is the
+*complete* council schema so migrations don't churn, but the **first
+loop** (capability-map.md) implements only: `members`, `proposals`
+(member-originated, states `suggested…decided/archived`), `interest`,
+`votes` (proposal context), `decisions`, `policy_versions`, and the
+executions table from execution.md. Everything marked **[v1.x]** or
+**[second wave]** is a reserved column/enum value or a later table:
+create it in the migration if convenient, but **build no writer, no
+sweep, no UI for it in the first loop.** Reserved ≠ licensed.
+
 ## Tables (schema sketch; ships as ordinary store migrations)
 
 ```
 members(user_id PK -> users.id,
         role ENUM(admin, adult, kid),
         vote_weight REAL DEFAULT 1.0,
-        optin_accountability INTEGER DEFAULT 1,   -- opt-OUT model, OQ-14
-        optin_watch_debt INTEGER DEFAULT 1,
-        optin_public_stats INTEGER DEFAULT 0,     -- DM-first default
+        optin_accountability INTEGER DEFAULT 1,   -- opt-OUT model: a WORKING
+        optin_watch_debt INTEGER DEFAULT 1,       -- default, not consent —
+        optin_public_stats INTEGER DEFAULT 0,     -- accountability features
+                                                  -- stay OFF until the
+                                                  -- household confirms the
+                                                  -- stance (OQ-14 gate)
         joined_at)
   -- extends users/identities (the substrate identity map IS the member
   -- registry); a users row without a members row cannot vote.
 
 proposals(id PK, media_id -> media.id,
-          proposed_by -> members.user_id NULL,  -- NULL for premiere-sourced
-          origin ENUM(member, seed, wrapped, watch_debt, premiere),
+          proposed_by -> members.user_id NULL,  -- NULL only for [v1.x] premiere
+          origin ENUM(member,                   -- first loop
+                      seed, wrapped, watch_debt, -- [second wave]
+                      premiere),                 -- [v1.x] Premiere Lobby
           pitch TEXT,                      -- member's why-suggested
           tmdb_snapshot_json,              -- card facts at proposal time
-          state ENUM(suggested, gauging, voting, deferred, decided, archived),
-          resurface_when_json NULL,        -- deferred only: condition snapshot,
-                                           -- e.g. {"tmdb_vote_count_gte": 50,
-                                           --       "not_before": "2026-09-01"}
+          state ENUM(suggested, gauging, voting, decided, archived,
+                     deferred),            -- [v1.x] no writer in first loop
+          resurface_when_json NULL,        -- [v1.x] deferred only: condition
+                                           -- snapshot, e.g.
+                                           -- {"tmdb_vote_count_gte": 50,
+                                           --  "not_before": "2026-09-01"}
           opened_at, state_changed_at, decided_at,
           decision_id -> decisions.id NULL,
           thread_ref TEXT)                 -- Discord thread id, nullable
@@ -109,9 +126,10 @@ suggested ──card posted──► gauging ──3 Maybes (policy)──► vo
     │                        ├─ 2 household DW / 1 admin DW (policy) ───┤
     │                        │            (straight to decided:request) │
     │                        ├─ stale Maybe 30d (policy) ──► archived   │
-    │                        └─ "remind us later" ──► deferred          ▼
+    │                        └─ "remind us later" ──► deferred [v1.x]   ▼
     └────────── admin veto (public, with reason) ─────────────────► decided
 
+[v1.x only — no writer or sweep exists in the first loop:]
 deferred ──resurface_when met (daily sweep)──► gauging (fresh card, warm interest)
     └───── condition unmet after policy max (default 180d) ──► archived
 ```
@@ -125,7 +143,7 @@ deferred ──resurface_when met (daily sweep)──► gauging (fresh card, wa
   (phase A: admin-confirm button; phase B: flagged auto-request).
 - Archived proposals keep their interest rows — a later re-proposal of the
   same media starts from the accumulated picture.
-- **Deferred is a deliberate wait, not lost interest** ("remind us later
+- **[v1.x] Deferred is a deliberate wait, not lost interest** ("remind us later
   once it's had more reviews"): the card records a `resurface_when_json`
   condition — review maturity (e.g. TMDB vote count/score thresholds,
   OQ-15), a not-before date, or availability — snapshotted at deferral
@@ -133,8 +151,8 @@ deferred ──resurface_when met (daily sweep)──► gauging (fresh card, wa
   The daily sweep re-opens met conditions into `gauging` with a fresh card
   and warm interest; conditions still unmet after a policy cap (default
   180 days) archive with a "let it go?" note rather than waiting forever.
-- `origin=premiere` proposals come from the **Premiere Lobby** (v1.x,
-  capability map): calendar-driven candidates from the TMDB upcoming/
+- **[v1.x]** `origin=premiere` proposals come from the **Premiere Lobby**
+  (capability map): calendar-driven candidates from the TMDB upcoming/
   discover surfaces, filtered by a deterministic suppression gate before
   a card is ever posted — franchise/genre matches to existing definite
   interest and watch history first; taste-memory scoring when it exists
@@ -148,7 +166,7 @@ deferred ──resurface_when met (daily sweep)──► gauging (fresh card, wa
 ```
 open ──evidence assembled, thread created──► deliberating ──closes_at──► decided
   │                                              │                          │
-  └── expired (nobody engaged by closes_at; no outcome recorded as decision) 
+  └── expired (nobody engaged by closes_at; no outcome recorded as decision)
 ```
 
 - `court`: one title; votes are `keep | delete_candidate | downgrade |

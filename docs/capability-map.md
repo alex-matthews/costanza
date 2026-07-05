@@ -1,10 +1,11 @@
 # Capability map
 
 Phases: **substrate** (shipped — observe + notify, the evidence layer),
-**council v1** (the product: Lobby, Council, protections, staged
-execution), **council v1.x** (additive once the loop is proven), **v2**
-(wider write scopes, each gated by ADR-0006/0009), **not ours** (lives
-elsewhere permanently).
+**council first loop** (the first build target — nothing else ships until
+it proves itself in the household), **council second wave** (gated on the
+first loop), **council v1.x** (additive expansion), **v2** (wider write
+scopes, each gated by ADR-0006/0009), **not ours** (lives elsewhere
+permanently).
 
 ## Substrate (shipped)
 
@@ -17,20 +18,30 @@ elsewhere permanently).
 | Reconcile / prune / identity-sync jobs; read-only source clients | Honest per-source guarantees matrix |
 | Read API + `/metrics`; request/watch stats | Wrapped and accountability inputs |
 
-## Council v1 (the product)
+## Council first loop (the first build target — build nothing beyond this)
+
+The smallest slice that proves the product: **a member proposes → the
+household expresses interest/votes → an admin confirms with one click →
+the request lands in Seerr → the card shows what happened.**
 
 | Capability | Notes |
 | --- | --- |
-| Lobby proposal cards with DW / Maybe / No / Already Seen | Discord buttons; identity-map attribution ([ADR-0008](adr/0008-discord-interactions-surface.md)) |
+| `/propose` + Lobby proposal cards with DW / Maybe / No / Already Seen | Member-originated only; Discord buttons; identity-map attribution ([ADR-0008](adr/0008-discord-interactions-surface.md)) |
 | Interest accumulation + policy thresholds with provenance | Versioned policy YAML ([council/policy.md](council/policy.md)) |
-| Proposal/discussion threads | One thread per proposal/case |
-| Retention decision engine, two skins (Media Court, Which Stays) | One engine; Which Stays capped ~1/week ([council/retention-engine.md](council/retention-engine.md)) |
-| Protected Shelf with human reasons | Costanza-owned registry; Maintainerr consumes later |
-| Decisions ledger with reasons + policy provenance | The council's memory |
+| Proposal discussion threads | One thread per proposal; no message-content intent (ADR-0008) |
+| Votes + decisions ledger with reasons + policy provenance | The council's memory |
 | Phase A execution: admin-confirm one-click Seerr request | Tier 3, isolated flagged executor, audit rows ([council/execution.md](council/execution.md)) |
-| Phase B execution: threshold auto-request | Tier 4, behind flag, hard caps, ships OFF |
-| TMDB metadata client + cache (posters, runtime, trailers) | Read-only ([ADR-0010](adr/0010-tmdb-metadata-dependency.md)) |
-| Request accountability + watch-debt check-ins | Playful, DM-first, opt-out; shame-free release |
+| Phase B executor code path | Built alongside A (same module), ships OFF behind flag + hard caps — an activation gate, not a first-loop feature |
+| Card status updates (requested → available, from substrate events) | Closes the loop visibly |
+| TMDB card metadata (search + details only) | Read-only ([ADR-0010](adr/0010-tmdb-metadata-dependency.md)); degrades to text cards |
+
+## Council second wave (gated on the first loop proving itself)
+
+| Capability | Notes |
+| --- | --- |
+| Retention decision engine, two skins (Media Court, Which Stays) | One engine; Which Stays capped ~1/week ([council/retention-engine.md](council/retention-engine.md)); verdicts report-only for downgrade/delete |
+| Protected Shelf with human reasons | Costanza-owned registry; Maintainerr consumes later |
+| Request accountability + watch-debt check-ins | Activation gate: household confirms visibility stance first (OQ-14) |
 | Library Wrapped (weekly/monthly) | Superlatives that provoke conversation, nothing streak-shaped |
 
 ## Council v1.x (additive)

@@ -52,7 +52,7 @@ boots with the notification kill switch **engaged**; disengage via
 | [docs/system-boundaries.md](docs/system-boundaries.md) | Costanza vs Resolute, Maintainerr, Chaski, Seerr, Plex/Tautulli, *arr |
 | [docs/handoff.md](docs/handoff.md) | Substrate implementation record: modules, contracts, data model, jobs, rollout |
 | [docs/build-notes.md](docs/build-notes.md) | Implementation reality: deviations, hardening, ops reset |
-| [docs/open-questions.md](docs/open-questions.md) | Open questions with working defaults (OQ-1–14) |
+| [docs/open-questions.md](docs/open-questions.md) | Open questions with working defaults and activation gates (OQ-1–16) |
 | [docs/risks.md](docs/risks.md) | Risk register |
 | [docs/prior-art.md](docs/prior-art.md) | Survey of adjacent tools and what was borrowed/rejected |
 | [docs/history/](docs/history/) | Historical artifacts (superseded specs, kept for the record) |

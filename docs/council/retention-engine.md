@@ -80,8 +80,12 @@ tally, and policy version. Then, by kind:
 - `keep` — recorded; the precedent shields the title from re-candidacy
   for a policy-defined cooldown.
 - `protect` — creates a `protections` row (reason required).
-- `downgrade` — a decision record + (phase A) admin-confirm execution
-  path, same staged discipline as requests ([execution.md](execution.md)).
+- `downgrade` — **report-only**: a decision record rendered as an
+  admin-channel report; a human acts (or doesn't) in the Arrs. There is
+  no downgrade execution path in any currently specified phase —
+  executing one would need a dedicated ADR naming the exact system and
+  verb, and it sits next to Resolute's calibration territory
+  (ADR-0009 scopes the executor to create-request only).
 - `delete_candidate` — **Costanza never deletes**
   ([ADR-0003](../adr/0003-maintainerr-boundary.md) unchanged). Council
   v1: the verdict renders as a human-readable report in the admin

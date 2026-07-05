@@ -36,13 +36,21 @@ including Discord user ids.
 - **Discussion-mining boundary (added 2026-07-05):** free-form message
   content may be read **only inside proposal/case threads** — spaces where
   members knowingly talk *to* the council — and only as taste signal for
-  that thread's subject. The bot requests message-content access scoped as
-  narrowly as Discord permits, never joins general channels for reading,
-  and whole-server chat mining is rejected outright: inferring taste from
-  the family's ambient conversation turns the council secretary into an
-  eavesdropper, and no recommendation quality is worth that. Organic
-  discussion outside threads influences Costanza only when a member brings
-  it in (a button press, a `/propose`, a message in the thread).
+  that thread's subject. Feasibility, stated precisely: interactions
+  (buttons, selects, modals, slash commands) carry their payloads without
+  any privileged intent, and that covers the entire first loop — **the
+  first loop does not enable Message Content at all.** Reading thread
+  discussion requires Discord's privileged **Message Content intent**,
+  which is global per bot, not per-channel; the "only in council threads"
+  scoping is therefore Costanza's own server-side filter (drop every
+  message event whose channel/thread id isn't a council `thread_ref`),
+  enforced in the adapter and testable. Enabling that intent is a
+  deliberate later activation, and whole-server chat mining is rejected
+  outright regardless: inferring taste from the family's ambient
+  conversation turns the council secretary into an eavesdropper, and no
+  recommendation quality is worth that. Organic discussion outside
+  threads influences Costanza only when a member brings it in (a button
+  press, a `/propose`, a message in the thread).
 
 ## Consequences
 

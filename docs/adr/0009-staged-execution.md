@@ -35,10 +35,12 @@ Execution ships in council v1, staged, as one isolated executor
 - **Instant demotion:** `COSTANZA_READ_ONLY=true` forces all execution
   into dry-run regardless of flags (ADR-0006's fire alarm, now with a
   concrete subject).
-- Scope of the executor is exactly **create request** (and later
-  council-decided downgrades through the same discipline). Never
-  approve/decline (admin policy + Resolute's flow), never delete
-  (ADR-0003), never profile changes (Resolute's turf).
+- Scope of the executor is exactly **create request** — one system
+  (Seerr), one verb. Never approve/decline (admin policy + Resolute's
+  flow), never delete (ADR-0003), never profile changes (Resolute's
+  turf). Council downgrade verdicts are **report-only**; if downgrade
+  execution is ever wanted, it requires a new ADR naming the exact
+  system and verb — it does not inherit this seam.
 - The no-external-writes constraint test lifts by exactly this one module
   ([council/constraint-amendments.md](../council/constraint-amendments.md)).
 
