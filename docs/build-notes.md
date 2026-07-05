@@ -229,7 +229,15 @@ Trivy image-scan first-run failure until `:main` exists (H18).
 - **Replay asserts the ledger directly** (same process) for the
   exactly-once check; everything else goes through the public API.
 
-## Definition-of-done results
+## Definition-of-done results (historical — original v1 build, 2026-07-04)
+
+> **Superseded on container facts:** the uid-1033/`VOLUME /data` image
+> described below was replaced in the ops reset (see the ops-reset section
+> above) with an identity-agnostic alpine image (`USER nobody:nogroup`, no
+> baked uid, no baked config; the cluster sets 1032:100 via
+> securityContext), and the write-verb constraint test now scans all of
+> `src/`, not just `clients/`. Test counts have grown since. Kept as the
+> record of the original definition-of-done pass.
 
 - All 166 tests green offline; `mise run replay` PASS (timeline order,
   single media identity, chain closure, exactly-once ledger, 202-always,

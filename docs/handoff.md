@@ -17,10 +17,9 @@ Everything a build session needs. Scope: Tiers 0–1 only (observe + notify).
 
 ```
 costanza/
-├── pyproject.toml            # uv-managed; python pinned to Resolute's
-│                             # current toolchain (3.14.x); fastapi,
-│                             # pydantic v2, discord.py, apscheduler,
-│                             # httpx, structlog
+├── pyproject.toml            # uv-managed; python 3.14.x pinned via
+│                             # .mise; fastapi, pydantic v2, discord.py,
+│                             # apscheduler, httpx, structlog
 ├── uv.lock
 ├── Dockerfile                # uv-based multi-stage, nonroot, /data volume
 ├── .mise/                    # config.toml + mise.lock — house task runner
@@ -48,7 +47,7 @@ costanza/
 │   ├── clients/              # read-only API clients: seerr, arr, tautulli
 │   ├── api/                  # read-only REST + /healthz /readyz /metrics
 │   └── stats/                # aggregate queries backing api + digest
-├── tests/                    # pytest, no-network default (Resolute style)
+├── tests/                    # pytest, no-network default
 ├── fixtures/                 # recorded webhook payloads per source/version
 ├── docs/                     # this pack, kept living
 └── deploy/                   # reference k8s notes (real manifests in home-ops)
