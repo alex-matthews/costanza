@@ -181,8 +181,7 @@ env var additionally forces silence regardless of the stored toggle.
 - **Reconcile:** diff logic against canned API responses; synthesized
   events carry `origin=reconcile`.
 - **No-network default;** a `mise run replay` task feeds fixture payloads
-  at a running instance for e2e smoke (mirrors Resolute's golden/fixtures
-  ethos).
+  at a running instance for e2e smoke (golden/fixtures-first ethos).
 
 ## Rollout plan
 

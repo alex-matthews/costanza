@@ -49,7 +49,8 @@ One Python process, one container, one PVC. Hexagonal internally:
 - Single replica, which SQLite requires anyway and household load trivially
   permits (< 1 event/sec forever).
 
-**Pros:** matches Resolute's proven house pattern; one thing to deploy,
+**Pros:** matches the cluster's proven single-replica stateful-app
+pattern; one thing to deploy,
 back up (volsync), and debug; fixture-driven testing stays trivial; no
 infra dependencies beyond a PVC.
 **Cons:** Discord lib in the same venv as core logic; a bot crash-loop can
@@ -84,12 +85,12 @@ noise control), not to infrastructure.
 
 ## Language / runtime
 
-**Python + uv + mise, pinned to the same Python minor as Resolute
-(3.14.x today)**, FastAPI + uvicorn, pydantic v2 models for all
-contracts, `discord.py` behind a notifier port, APScheduler (or a simple
-asyncio cron loop) for jobs. Mirrors Resolute's toolchain (uv, pytest,
-ruff, fixtures, no-network tests) so the two services share one house
-style. Go/TypeScript were considered and declined: the workload is
+**Python 3.14.x + uv + mise (pinned via `.python-version`/`.mise`)**,
+FastAPI + uvicorn, pydantic v2 models for all contracts, `discord.py`
+behind a notifier port, APScheduler (or a simple asyncio cron loop) for
+jobs. Toolchain (uv, pytest, ruff, fixtures, no-network tests) is the
+shared house style across this household's services.
+Go/TypeScript were considered and declined: the workload is
 integration- and (later) LLM-heavy, where Python iteration speed wins, and
 a third runtime buys nothing a port boundary doesn't.
 
