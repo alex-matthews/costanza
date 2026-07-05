@@ -1,24 +1,26 @@
 # Costanza v1 — scoped build prompt
 
+> **Historical artifact.** This is the prompt that built what is now the substrate layer; it is preserved verbatim as the record of what that build was told (including conventions since corrected — see build-notes.md) and is not current spec. Current product: [../product-brief.md](../product-brief.md) and [../council/](../council/).
+
 You are implementing **Costanza v1** in this repository (`~/src/costanza`).
 A complete, reviewed design pack exists and is **authoritative**. Your job
 is execution, not redesign.
 
 ## Read first, in this order
 
-1. [docs/handoff.md](handoff.md) — your primary spec: repo layout, modules,
+1. [docs/handoff.md](../handoff.md) — your primary spec: repo layout, modules,
    canonical event contract, SQLite schema, API surface, jobs, config,
    testing, rollout.
-2. [docs/adr/](adr/) — ADRs 0001–0006. These are settled. Do not relitigate
+2. [docs/adr/](../adr/) — ADRs 0001–0006. These are settled. Do not relitigate
    them; if implementation reveals a genuine conflict, stop and surface it
    rather than "resolving" it silently.
-3. [docs/architecture.md](architecture.md) — especially the reconciliation
+3. [docs/architecture.md](../architecture.md) — especially the reconciliation
    guarantees matrix and the eventing/idempotency rules.
-4. [docs/open-questions.md](open-questions.md) — **the recommended defaults
+4. [docs/open-questions.md](../open-questions.md) — **the recommended defaults
    are binding.** OQ-1 and OQ-6 are already answered; nothing is left that
    blocks the build.
-5. [docs/system-boundaries.md](system-boundaries.md) and
-   [docs/capability-map.md](capability-map.md) — for scope arbitration when
+5. [docs/system-boundaries.md](../system-boundaries.md) and
+   [docs/capability-map.md](../capability-map.md) — for scope arbitration when
    you're tempted to add something.
 
 ## Scope: exactly this

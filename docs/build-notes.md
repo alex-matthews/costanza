@@ -1,7 +1,7 @@
 # v1 build notes
 
 Implementation record for the v1 build (2026-07-04, per
-[v1-build-prompt.md](v1-build-prompt.md)). The design pack was followed;
+[v1-build-prompt.md](history/v1-build-prompt.md)). The design pack was followed;
 everything below is either a small deviation, a choice the pack left
 open, or a discovery worth carrying into open-questions.
 
@@ -184,7 +184,7 @@ Blocker-grade container/deploy conflicts with the live cluster, fixed:
 - **H8 docs authority sweep:** "Resolute as house style" removed from
   living docs; architecture.md/handoff.md carry an ops-authority
   correction note pointing at home-ops live manifests and
-  home-operations/containers. v1-build-prompt.md is left as the
+  home-operations/containers. v1-build-prompt.md (now docs/history/) is left as the
   historical record of what the build was told. Product/boundary
   discussion of Resolute-the-service unchanged.
 - **H9 workflow parity audit:** the shared action pins

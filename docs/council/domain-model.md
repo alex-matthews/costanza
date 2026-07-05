@@ -1,0 +1,217 @@
+# Council domain model
+
+The council layer is a set of first-class aggregates
+([ADR-0007](../adr/0007-council-domain-layer.md)) that sit **above** the
+substrate's event ledger. Council rows *reference* events and media as
+evidence; they never duplicate them. `signals` stays what it is today —
+raw reaction capture, no domain meaning.
+
+**Phase legend — read before building.** The sketch below is the
+*complete* council schema so migrations don't churn, but the **first
+loop** (capability-map.md) implements only: `members`, `proposals`
+(member-originated, states `suggested…decided/archived`), `interest`,
+`votes` (proposal context), `decisions`, `policy_versions`, and the
+executions table from execution.md. Everything marked **[v1.x]** or
+**[second wave]** is a reserved column/enum value or a later table:
+create it in the migration if convenient, but **build no writer, no
+sweep, no UI for it in the first loop.** Reserved ≠ licensed.
+
+## Tables (schema sketch; ships as ordinary store migrations)
+
+```
+members(user_id PK -> users.id,
+        role ENUM(admin, adult, kid),
+        vote_weight REAL DEFAULT 1.0,
+        optin_accountability INTEGER DEFAULT 1,   -- opt-OUT model: a WORKING
+        optin_watch_debt INTEGER DEFAULT 1,       -- default, not consent —
+        optin_public_stats INTEGER DEFAULT 0,     -- accountability features
+                                                  -- stay OFF until the
+                                                  -- household confirms the
+                                                  -- stance (OQ-14 gate)
+        joined_at)
+  -- extends users/identities (the substrate identity map IS the member
+  -- registry); a users row without a members row cannot vote.
+
+proposals(id PK, media_id -> media.id,
+          proposed_by -> members.user_id NULL,  -- NULL only for [v1.x] premiere
+          origin ENUM(member,                   -- first loop
+                      seed, wrapped, watch_debt, -- [second wave]
+                      premiere),                 -- [v1.x] Premiere Lobby
+          pitch TEXT,                      -- member's why-suggested
+          tmdb_snapshot_json,              -- card facts at proposal time
+          state ENUM(suggested, gauging, voting, decided, archived,
+                     deferred),            -- [v1.x] no writer in first loop
+          resurface_when_json NULL,        -- [v1.x] deferred only: condition
+                                           -- snapshot, e.g.
+                                           -- {"tmdb_vote_count_gte": 50,
+                                           --  "not_before": "2026-09-01"}
+          opened_at, state_changed_at, decided_at,
+          decision_id -> decisions.id NULL,
+          thread_ref TEXT)                 -- Discord thread id, nullable
+
+interest(member_id -> members.user_id,
+         media_id -> media.id,
+         level ENUM(definite, maybe, no, seen),
+         set_at,
+         via ENUM(discord, api, import),
+         UNIQUE(member_id, media_id))
+  -- keyed on MEDIA, not proposal: interest outlives any one card and a
+  -- re-proposal starts warm. Latest write wins; history of changes goes
+  -- to signals for taste memory.
+
+cases(id PK,
+      skin ENUM(court, which_stays),
+      media_ids_json,                      -- [one] for court, [two] for which_stays
+      evidence_json,                       -- snapshot, see below
+      state ENUM(open, deliberating, decided, expired),
+      thread_ref TEXT,
+      opened_at, closes_at, decided_at,
+      decision_id -> decisions.id NULL,
+      policy_version INTEGER)
+
+votes(id PK,
+      context_kind ENUM(proposal, case),
+      context_id,                          -- proposals.id | cases.id
+      member_id -> members.user_id,
+      choice TEXT,                         -- per-context vocabulary
+      weight REAL,                         -- copied from members at cast time
+      cast_at,
+      via ENUM(discord, api),
+      interaction_ref TEXT,                -- Discord interaction id (dedupe)
+      UNIQUE(context_kind, context_id, member_id))
+  -- re-voting updates the row (latest wins) and appends to signals.
+
+pleas(id PK, case_id -> cases.id,
+      member_id -> members.user_id,
+      text TEXT,
+      llm_summary TEXT NULL,               -- ADR-0005 boundary, never a score
+      created_at)
+
+protections(id PK, media_id -> media.id,
+            reason ENUM(comfort_watch, family_favorite, kids, sentimental,
+                        hard_to_reacquire, demo_material, seasonal,
+                        admin_override),
+            note TEXT,
+            granted_by -> members.user_id,
+            granted_at, review_at NULL,
+            released_at NULL, released_by NULL)
+
+decisions(id PK,
+          kind ENUM(request, keep, delete_candidate, downgrade, protect,
+                    release_protection, watch_next, archive),
+          subject_kind ENUM(proposal, case, media),
+          subject_id,
+          outcome TEXT,                    -- human-readable result
+          reason TEXT,                     -- the household's why
+          trigger ENUM(threshold, vote, admin, veto),
+          policy_version INTEGER NULL,     -- REQUIRED when trigger=threshold
+          decided_at,
+          vetoed_by NULL, veto_reason NULL,
+          execution_id NULL)               -- -> executions (execution.md)
+
+policy_versions(version PK, content_hash, loaded_at, source_note)
+```
+
+Executions (`executions` table) are specified in
+[execution.md](execution.md); the policy file contract in
+[policy.md](policy.md).
+
+## State machines
+
+### Proposal
+
+```
+suggested ──card posted──► gauging ──3 Maybes (policy)──► voting ──► decided
+    │                        │                                          │
+    │                        ├─ 2 household DW / 1 admin DW (policy) ───┤
+    │                        │            (straight to decided:request) │
+    │                        ├─ stale Maybe 30d (policy) ──► archived   │
+    │                        └─ "remind us later" ──► deferred [v1.x]   ▼
+    └────────── admin veto (public, with reason) ─────────────────► decided
+
+[v1.x only — no writer or sweep exists in the first loop:]
+deferred ──resurface_when met (daily sweep)──► gauging (fresh card, warm interest)
+    └───── condition unmet after policy max (default 180d) ──► archived
+```
+
+- `gauging` collects interest button presses; threshold evaluation runs on
+  every interest change and on a daily sweep (staleness).
+- Every automatic transition records `trigger=threshold` +
+  `policy_version` on the resulting decision. Vote outcomes record
+  `trigger=vote`; admin actions `trigger=admin|veto`.
+- `decided` proposals with `kind=request` flow into the execution model
+  (phase A: admin-confirm button; phase B: flagged auto-request).
+- Archived proposals keep their interest rows — a later re-proposal of the
+  same media starts from the accumulated picture.
+- **[v1.x] Deferred is a deliberate wait, not lost interest** ("remind us later
+  once it's had more reviews"): the card records a `resurface_when_json`
+  condition — review maturity (e.g. TMDB vote count/score thresholds,
+  OQ-15), a not-before date, or availability — snapshotted at deferral
+  time so a later policy edit never silently changes what was promised.
+  The daily sweep re-opens met conditions into `gauging` with a fresh card
+  and warm interest; conditions still unmet after a policy cap (default
+  180 days) archive with a "let it go?" note rather than waiting forever.
+- **[v1.x]** `origin=premiere` proposals come from the **Premiere Lobby**
+  (capability map): calendar-driven candidates from the TMDB upcoming/
+  discover surfaces, filtered by a deterministic suppression gate before
+  a card is ever posted — franchise/genre matches to existing definite
+  interest and watch history first; taste-memory scoring when it exists
+  ([policy.md](policy.md) caps cards/week; suppressed candidates are
+  logged, never posted). Curation quality is honest about cold start:
+  with no taste history the gate is conservative, and member proposals
+  remain the primary source.
+
+### Case (one machine, two skins)
+
+```
+open ──evidence assembled, thread created──► deliberating ──closes_at──► decided
+  │                                              │                          │
+  └── expired (nobody engaged by closes_at; no outcome recorded as decision)
+```
+
+- `court`: one title; votes are `keep | delete_candidate | downgrade |
+  protect`; pleas welcome.
+- `which_stays`: two titles; votes are `media_ids[0] | media_ids[1] |
+  both_stay`; capped at one open case per week by policy cadence.
+- Kids' votes are excluded from `delete_candidate` tallies but counted
+  for `watch_next` contexts (OQ-11).
+- A protection on any involved title blocks `delete_candidate` outcomes:
+  the engine surfaces the protection instead of putting it to a vote.
+
+### Interest
+
+`definite | maybe | no | seen` — a flat latest-wins state per
+member × media, changed only by that member (or import from Seerr
+watchlists later). Transitions carry no workflow; the *proposal* machine
+reads aggregate interest, the taste memory reads the change history from
+signals.
+
+## Events as evidence (the substrate relationship)
+
+- Council rows point at `media.id` and `users.id` — the same rows the
+  substrate maintains. No council table stores titles, watch counts, or
+  timelines.
+- `cases.evidence_json` is a **snapshot** assembled at case-open time from
+  substrate queries (timeline, watch counts per member, request chain,
+  size/quality attrs from events) plus TMDB facts. It embeds the source
+  `events.id` list so the case can always be re-derived and audited. The
+  snapshot exists so a verdict is judged against what the household *saw*,
+  even if reconcile later back-fills history.
+- Accountability and watch-debt are pure substrate queries (request chains
+  joined to watch events) filtered through member opt-ins; they create
+  council rows only when they open a proposal or check-in decision.
+- `signals` remains append-only raw capture (button presses, reaction
+  emoji, veto occurrences) feeding taste memory in v1.x. Nothing reads it
+  on a hot path; nothing but capture writes it.
+
+## What this deliberately avoids
+
+- **No shoehorning into `signals`** (ADR-0007): votes with weights and
+  uniqueness constraints, protections with reasons and reviews, and
+  decisions with provenance are relational aggregates, not events.
+- **No duplicate media/user identity:** the hardest substrate problems
+  (identity, dedupe) stay solved in exactly one place.
+- **No cross-layer writes:** the council layer never inserts canonical
+  events; if a council action needs to appear in timelines (e.g. an
+  executed request), the *source system's webhook* reports it back through
+  the front door, which keeps the ledger honest.

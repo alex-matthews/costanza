@@ -25,8 +25,14 @@ Tier ≥ 1 action writes an audit record before execution.
 
 Cross-cutting rules:
 
-- **v1 ships Tiers 0–1 only.** No code path to external writes exists in
-  the v1 binary (not just flagged off — not built).
+- **The substrate ships Tiers 0–1 only.** No code path to external
+  writes exists in the substrate binary (not just flagged off — not
+  built). *Amended by [ADR-0009](0009-staged-execution.md) (2026-07-05):
+  council v1 adds exactly one designed seam — the Seerr create-request
+  executor, phase A (Tier 3, admin-confirm) on by default and phase B
+  (Tier 4, hard-capped) shipping OFF. Everything else in this table and
+  these rules binds unchanged, and ADR-0009 is that table's first
+  concrete instance.*
 - Approval UX rides the notifier port (Discord buttons/reactions from
   admin-mapped identities in v2), but approval *state* lives in Costanza's
   store, not in Discord.
@@ -42,7 +48,11 @@ Cross-cutting rules:
 
 - Some ceremony per new capability (classify, flag, audit) — deliberate
   friction.
-- The tier table doubles as the roadmap's safety review checklist.
+- The tier table doubles as the roadmap's safety review checklist;
+  [ADR-0009](0009-staged-execution.md) instantiates Tier 3/Tier 4 for the
+  vote→request loop and [council/execution.md](../council/execution.md)
+  carries the executor mechanics (write-ahead audit, caps, instant
+  demotion).
 
 ## Alternatives rejected
 
