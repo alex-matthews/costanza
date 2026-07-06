@@ -54,8 +54,9 @@ def correlator(store, routing):
     return Correlator(store)
 
 
-def _ingest(correlator, source, name):
+def _ingest(correlator, source, name, *, received_at=None):
     for event in normalize(source, source, load_fixture(source, name)):
+        event.received_at = received_at
         correlator.apply(event)
 
 
@@ -131,7 +132,12 @@ def test_reconcile_radarr_matrix(store, routing, correlator, now):
 
 def test_reconcile_radarr_delete_guarded_by_near_window(store, routing, correlator, now):
     # The webhook delete already arrived (different key shape than history).
-    _ingest(correlator, "radarr", "movie-file-delete.json")
+    _ingest(
+        correlator,
+        "radarr",
+        "movie-file-delete.json",
+        received_at=now - timedelta(hours=2, minutes=30),
+    )
     records = [r for r in load_fixture("reconcile", "radarr-history.json")["records"]
                if r["eventType"] == "movieFileDeleted"]
     clients = {"radarr": FakeArr(records)}
