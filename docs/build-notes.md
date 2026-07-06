@@ -190,11 +190,18 @@ Blocker-grade container/deploy conflicts with the live cluster, fixed:
 - **H9 workflow parity audit:** the shared action pins
   (actions/checkout, jdx/mise-action, actions/create-github-app-token,
   renovatebot/github-action) match the live home-ops workflows exactly.
-  Intentional divergences kept: pinned `RENOVATE_VERSION` +
-  `RENOVATE_REPOSITORIES` + mise unsafe-execution env (code repos need
-  `mise lock`; home-ops uses autodiscover + latest), and the
-  docker/release-please/trivy/codeql actions have no home-ops
-  counterpart (SHA-pinned, adopted deliberately). No cosmetic churn.
+  Intentional divergences kept: explicit `RENOVATE_REPOSITORIES` +
+  mise unsafe-execution env (code repos need `mise lock`; home-ops uses
+  autodiscover), and the docker/release-please/trivy/codeql actions have
+  no home-ops counterpart (SHA-pinned, adopted deliberately). No cosmetic
+  churn.
+- **CI follow-ups (post-initial-drop):** the Renovate engine version is
+  no longer pinned separately — it follows the SHA-pinned
+  `renovatebot/github-action` (matching home-ops); `uv` and `python`
+  updates are grouped across the container image and mise toolchain; and
+  the Release Please workflow re-runs `uv lock` on the release branch
+  after a version bump so `uv sync --locked` stays green (release-please
+  updates `pyproject.toml` but not `uv.lock`).
 - **H10 secrets audit:** Seerr/Arr clients verified to inherit the
   sanitized ReadOnlyClient error path (tests added, mirroring the
   Tautulli ones); a new test proves neither presented nor configured
@@ -205,7 +212,8 @@ Blocker-grade container/deploy conflicts with the live cluster, fixed:
 Accepted risks restated from the review: kill-switch `set_by` free text
 (H14), Tautulli apikey in cluster-internal URLs (H15), single household
 bearer token (H16), repair-based (not transactional) consistency (H17),
-Trivy image-scan first-run failure until `:main` exists (H18).
+Trivy image-scan first-run failure until `:main` exists (H18 — retired
+now that the first `:main` image has published).
 
 ## Discoveries / candidates for open-questions
 
