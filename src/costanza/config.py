@@ -149,7 +149,11 @@ class Settings(BaseSettings):
     routing_path: Path = Path("/config/routing.yaml")
 
     listen_host: str = "0.0.0.0"  # noqa: S104 — container service
-    listen_port: int = 8140
+    listen_port: int = 8080
+    # Metrics on a dedicated listener (home-operations org convention: main app
+    # on 8080, /metrics on 8081, kept off the possibly-exposed main port).
+    metrics_port: int = 8081
+    metrics_enabled: bool = True
     log_level: str = "INFO"
 
     # Fire-alarm override: forces silence regardless of the stored toggle.

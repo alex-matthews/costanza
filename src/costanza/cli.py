@@ -14,18 +14,39 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     if args.command == "serve":
+        import asyncio
+
         import uvicorn
 
         from .config import Settings
+        from .main import create_app, create_metrics_app
 
         settings = Settings()
-        uvicorn.run(
-            "costanza.main:create_app",
-            factory=True,
-            host=settings.listen_host,
-            port=settings.listen_port,
-            log_level=settings.log_level.lower(),
-        )
+        log_level = settings.log_level.lower()
+        configs = [
+            uvicorn.Config(
+                create_app(),
+                host=settings.listen_host,
+                port=settings.listen_port,
+                log_level=log_level,
+            )
+        ]
+        # Metrics on a dedicated listener (org convention: 8081, off the main port).
+        if settings.metrics_enabled:
+            configs.append(
+                uvicorn.Config(
+                    create_metrics_app(),
+                    host=settings.listen_host,
+                    port=settings.metrics_port,
+                    log_level=log_level,
+                )
+            )
+        servers = [uvicorn.Server(c) for c in configs]
+
+        async def _run() -> None:
+            await asyncio.gather(*(s.serve() for s in servers))
+
+        asyncio.run(_run())
         return 0
 
     if args.command == "replay":

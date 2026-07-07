@@ -39,7 +39,7 @@ docker run -d --name "$NAME" \
   -e HOME=/nonexistent \
   -v "$tmp/data:/data" \
   -v "$PWD/config/routing.example.yaml:/config/routing.yaml:ro" \
-  -p "127.0.0.1:$PORT:8140" \
+  -p "127.0.0.1:$PORT:8080" \
   "$IMAGE" >/dev/null
 
 for _ in $(seq 1 60); do

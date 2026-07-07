@@ -13,7 +13,8 @@ from dataclasses import dataclass, field
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.interval import IntervalTrigger
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
+from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 
 from . import __version__, metrics
 from .api import build_api_router, build_ops_router
@@ -125,6 +126,19 @@ def _build_scheduler(rt: Runtime) -> AsyncIOScheduler:
         id="identity_sync",
     )
     return scheduler
+
+
+def create_metrics_app() -> FastAPI:
+    """Prometheus metrics on a dedicated listener (home-operations org
+    convention: /metrics on 8081, kept off the possibly-exposed main port).
+    Reads the process-global prometheus_client registry — no shared state."""
+    app = FastAPI(title="costanza-metrics", version=__version__)
+
+    @app.get("/metrics")
+    def metrics_endpoint() -> Response:
+        return Response(content=generate_latest(), media_type=CONTENT_TYPE_LATEST)
+
+    return app
 
 
 def create_app(config: Config | None = None) -> FastAPI:

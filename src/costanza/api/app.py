@@ -12,8 +12,7 @@ import hmac
 import json
 from datetime import datetime
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response
-from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from pydantic import BaseModel
 
 from .. import stats
@@ -157,9 +156,5 @@ def build_ops_router(config: Config, store: Store) -> APIRouter:
         store.ping()
         assert config.routing is not None
         return {"status": "ready"}
-
-    @router.get("/metrics")
-    def metrics() -> Response:
-        return Response(content=generate_latest(), media_type=CONTENT_TYPE_LATEST)
 
     return router
