@@ -1,0 +1,20 @@
+{
+  "event": "playback_stop",
+  "media_type": "episode",
+  "title": "The Expanse",
+  "show_name": "The Expanse",
+  "episode_name": "Dulcinea",
+  "season_num": "1",
+  "episode_num": "1",
+  "year": "2015",
+  "tvdbId": "280619",
+  "tmdbId": "63639",
+  "rating_key": "61001",
+  "session_key": "88",
+  "plex_username": "bob",
+  "user_id": "13",
+  "player": "Bob's iPad",
+  "quality_profile": "1080p",
+  "video_resolution": "1080p",
+  "progress_percent": "97"
+}

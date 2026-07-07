@@ -1,0 +1,25 @@
+{
+  "events": [
+    {
+      "source": "seerr",
+      "source_event_key": "seerr:request.available:RQ-1001:PARTIALLY_AVAILABLE",
+      "origin": "webhook",
+      "type": "request.available",
+      "media": {
+        "tmdb_id": 10101,
+        "title": "The Quiet Place",
+        "kind": "movie",
+        "detail": {}
+      },
+      "user": {
+        "display": "alice",
+        "provider": "seerr",
+        "external_id": "alice"
+      },
+      "attrs": {
+        "request_id": "RQ-1001",
+        "partial": true
+      }
+    }
+  ]
+}

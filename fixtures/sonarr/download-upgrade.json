@@ -1,0 +1,42 @@
+{
+  "series": {
+    "id": 42,
+    "title": "The Expanse",
+    "titleSlug": "the-expanse",
+    "path": "/tv/The Expanse",
+    "tvdbId": 280619,
+    "tvMazeId": 1825,
+    "tmdbId": 63639,
+    "imdbId": "tt3230854",
+    "type": "standard",
+    "year": 2015
+  },
+  "episodes": [
+    {
+      "id": 3011,
+      "episodeNumber": 2,
+      "seasonNumber": 1,
+      "title": "The Big Empty",
+      "airDate": "2015-12-15",
+      "airDateUtc": "2015-12-16T03:00:00Z",
+      "seriesId": 42
+    }
+  ],
+  "episodeFile": {
+    "id": 7822,
+    "relativePath": "Season 01/The.Expanse.S01E02.2160p.WEB-DL.DDP5.1.HDR.HEVC-GROUP.mkv",
+    "path": "/downloads/The.Expanse.S01E02.2160p.WEB-DL.DDP5.1.HDR.HEVC-GROUP.mkv",
+    "quality": "WEBDL-2160p",
+    "qualityVersion": 1,
+    "releaseGroup": "GROUP",
+    "sceneName": "The.Expanse.S01E02.2160p.WEB-DL.DDP5.1.HDR.HEVC-GROUP",
+    "size": 9279812345
+  },
+  "isUpgrade": true,
+  "downloadClient": "qBittorrent",
+  "downloadClientType": "qBittorrent",
+  "downloadId": "A63A2E9C11B8D42F0A6E9A2B1C3D4E5F60718294",
+  "eventType": "Download",
+  "instanceName": "Sonarr",
+  "applicationUrl": ""
+}

@@ -1,0 +1,19 @@
+{
+  "notification_type": "MEDIA_DECLINED",
+  "event": "MEDIA_DECLINED",
+  "subject": "The Quiet Place",
+  "message": "Request was declined by policy.",
+  "image": "https://example.invalid/the-quiet-place.jpg",
+  "media": {
+    "media_type": "movie",
+    "status": "FAILED",
+    "status4k": "UNKNOWN",
+    "tmdbId": "10101"
+  },
+  "request": {
+    "request_id": "RQ-1001",
+    "requestedBy_username": "alice",
+    "requestedBy_email": "alice@example.invalid",
+    "requestedBy_settings_discordId": "<@123456789>"
+  }
+}

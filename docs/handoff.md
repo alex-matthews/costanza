@@ -1,20 +1,26 @@
-# V1 implementation handoff
+# Substrate implementation record
 
-Everything a build session needs. Scope: Tiers 0–1 only (observe + notify).
+*(Formerly "V1 implementation handoff". This document specified the build
+of what is now the **substrate layer** — ingest, normalize, correlate,
+store, notify, jobs, clients, read API — and remains the accurate record
+of what is implemented. The product on top is the household media
+council: see [product-brief.md](product-brief.md) and
+[council/](council/). Scope of this layer: observe + notify, ADR-0006
+Tiers 0–1.)*
 
 ## Repo structure
 
 ```
 costanza/
-├── pyproject.toml            # uv-managed; python pinned to Resolute's
-│                             # current toolchain (3.14.x); fastapi,
-│                             # pydantic v2, discord.py, apscheduler,
-│                             # httpx, structlog
+├── pyproject.toml            # uv-managed; python 3.14.x pinned via
+│                             # .mise; fastapi, pydantic v2, discord.py,
+│                             # apscheduler, httpx, structlog
 ├── uv.lock
-├── Dockerfile                # uv-based multi-stage, nonroot, /data volume
+├── Dockerfile                # uv multi-stage on SHA-pinned alpine; identity-
+│                             # agnostic (no baked user/config; K8s owns identity)
 ├── .mise/                    # config.toml + mise.lock — house task runner
-│                             # (Resolute-style tasks: sync, test, lint,
-│                             # golden, replay, run); no justfile
+│                             # (sync, test, lint, replay, k8s-smoke,
+│                             # run, ci); no justfile
 ├── src/costanza/
 │   ├── config.py             # pydantic-settings; env-first; fail-fast
 │   ├── main.py               # wiring: FastAPI app + worker + bot + jobs
@@ -37,7 +43,7 @@ costanza/
 │   ├── clients/              # read-only API clients: seerr, arr, tautulli
 │   ├── api/                  # read-only REST + /healthz /readyz /metrics
 │   └── stats/                # aggregate queries backing api + digest
-├── tests/                    # pytest, no-network default (Resolute style)
+├── tests/                    # pytest, no-network default
 ├── fixtures/                 # recorded webhook payloads per source/version
 ├── docs/                     # this pack, kept living
 └── deploy/                   # reference k8s notes (real manifests in home-ops)
@@ -152,9 +158,14 @@ env var additionally forces silence regardless of the stored toggle.
 
 ## Kubernetes (home-ops)
 
+Authoritative deployment posture (securityContext 1032/100 + fsGroup,
+identity-agnostic image, SQLite-on-volsync drill) lives in
+[../deploy/README.md](../deploy/README.md); summary:
+
 - `kubernetes/apps/default/costanza/app/`: HelmRelease (bjw-s app-template,
   single replica, Recreate), OCIRepository, ExternalSecret, PVC (5Gi,
-  volsync label like peers), ConfigMap for routing.yaml.
+  volsync label like peers), ConfigMap for routing.yaml (required — the
+  image ships no config).
 - Probes: `/healthz` liveness, `/readyz` (DB + config loaded; **not**
   Discord — bot down must not restart-loop ingestion).
 - ServiceMonitor; alerts later on `costanza_outbox_backlog` and
@@ -171,8 +182,7 @@ env var additionally forces silence regardless of the stored toggle.
 - **Reconcile:** diff logic against canned API responses; synthesized
   events carry `origin=reconcile`.
 - **No-network default;** a `mise run replay` task feeds fixture payloads
-  at a running instance for e2e smoke (mirrors Resolute's golden/fixtures
-  ethos).
+  at a running instance for e2e smoke (golden/fixtures-first ethos).
 
 ## Rollout plan
 

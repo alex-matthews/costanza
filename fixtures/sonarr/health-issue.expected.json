@@ -1,0 +1,16 @@
+{
+  "events": [
+    {
+      "source": "sonarr",
+      "source_event_key": "sonarr:health.issue:DownloadClientStatusCheck:231540783c17ee11",
+      "origin": "webhook",
+      "type": "health.issue",
+      "attrs": {
+        "level": "error",
+        "message": "All download clients are unavailable due to failures",
+        "check": "DownloadClientStatusCheck",
+        "resolved": false
+      }
+    }
+  ]
+}

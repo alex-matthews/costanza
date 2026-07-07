@@ -1,0 +1,57 @@
+{
+  "series": {
+    "id": 42,
+    "title": "The Expanse",
+    "titleSlug": "the-expanse",
+    "path": "/tv/The Expanse",
+    "tvdbId": 280619,
+    "tvMazeId": 1825,
+    "tmdbId": 63639,
+    "imdbId": "tt3230854",
+    "type": "standard",
+    "year": 2015
+  },
+  "episodes": [
+    {
+      "id": 3020,
+      "episodeNumber": 1,
+      "seasonNumber": 2,
+      "title": "Safe",
+      "airDate": "2017-02-01",
+      "airDateUtc": "2017-02-02T03:00:00Z",
+      "seriesId": 42
+    },
+    {
+      "id": 3021,
+      "episodeNumber": 2,
+      "seasonNumber": 2,
+      "title": "Doors & Corners",
+      "airDate": "2017-02-01",
+      "airDateUtc": "2017-02-02T04:00:00Z",
+      "seriesId": 42
+    },
+    {
+      "id": 3022,
+      "episodeNumber": 3,
+      "seasonNumber": 2,
+      "title": "Static",
+      "airDate": "2017-02-08",
+      "airDateUtc": "2017-02-09T03:00:00Z",
+      "seriesId": 42
+    }
+  ],
+  "release": {
+    "quality": "WEBDL-1080p",
+    "qualityVersion": 1,
+    "releaseGroup": "GROUP",
+    "releaseTitle": "The.Expanse.S02.1080p.WEB-DL.DD5.1.H.264-GROUP",
+    "indexer": "nzbgeek",
+    "size": 42798123456
+  },
+  "downloadClient": "SABnzbd",
+  "downloadClientType": "SABnzbd",
+  "downloadId": "SABnzbd_nzo_seasonpack",
+  "eventType": "Grab",
+  "instanceName": "Sonarr",
+  "applicationUrl": ""
+}

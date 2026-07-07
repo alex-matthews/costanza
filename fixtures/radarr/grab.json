@@ -1,0 +1,31 @@
+{
+  "movie": {
+    "id": 686,
+    "title": "Arrival",
+    "year": 2016,
+    "releaseDate": "2016-11-11",
+    "folderPath": "/movies/Arrival (2016)",
+    "tmdbId": 329865,
+    "imdbId": "tt2543164"
+  },
+  "remoteMovie": {
+    "tmdbId": 329865,
+    "imdbId": "tt2543164",
+    "title": "Arrival",
+    "year": 2016
+  },
+  "release": {
+    "quality": "WEBDL-2160p",
+    "qualityVersion": 1,
+    "releaseGroup": "GROUP",
+    "releaseTitle": "Arrival.2016.2160p.WEB-DL.DDP5.1.Atmos.DV.HDR.H.265-GROUP",
+    "indexer": "nzbgeek",
+    "size": 15832481234
+  },
+  "downloadClient": "SABnzbd",
+  "downloadClientType": "SABnzbd",
+  "downloadId": "SABnzbd_nzo_kjb2cd8x",
+  "eventType": "Grab",
+  "instanceName": "Radarr",
+  "applicationUrl": ""
+}

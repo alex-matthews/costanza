@@ -1,0 +1,19 @@
+{
+  "notification_type": "MEDIA_AVAILABLE",
+  "event": "MEDIA_AVAILABLE",
+  "subject": "The Quiet Place",
+  "message": "Request is partially available.",
+  "image": "https://example.invalid/the-quiet-place.jpg",
+  "media": {
+    "media_type": "movie",
+    "status": "PARTIALLY_AVAILABLE",
+    "status4k": "PARTIALLY_AVAILABLE",
+    "tmdbId": "10101"
+  },
+  "request": {
+    "request_id": "RQ-1001",
+    "requestedBy_username": "alice",
+    "requestedBy_email": "alice@example.invalid",
+    "requestedBy_settings_discordId": "<@123456789>"
+  }
+}

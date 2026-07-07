@@ -1,0 +1,14 @@
+{
+  "events": [
+    {
+      "source": "seerr",
+      "source_event_key": "seerr:unknown:TEST_NOTIFICATION:3cd6a3d8791cf834",
+      "origin": "webhook",
+      "type": "source.unknown",
+      "attrs": {
+        "payload_kind": "TEST_NOTIFICATION",
+        "test": true
+      }
+    }
+  ]
+}

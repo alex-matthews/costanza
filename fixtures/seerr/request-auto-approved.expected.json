@@ -1,0 +1,26 @@
+{
+  "events": [
+    {
+      "source": "seerr",
+      "source_event_key": "seerr:request.approved:RQ-3001",
+      "origin": "webhook",
+      "type": "request.approved",
+      "media": {
+        "tmdb_id": 329865,
+        "title": "Arrival",
+        "year": 2016,
+        "kind": "movie",
+        "detail": {}
+      },
+      "user": {
+        "display": "alice",
+        "provider": "seerr",
+        "external_id": "alice"
+      },
+      "attrs": {
+        "request_id": "RQ-3001",
+        "auto_approved": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "pageInfo": { "pages": 1, "pageSize": 100, "results": 2, "page": 1 },
+  "results": [
+    {
+      "id": 555,
+      "status": 2,
+      "createdAt": "2026-07-03T10:00:00.000Z",
+      "updatedAt": "2026-07-03T12:00:00.000Z",
+      "requestedBy": { "id": 2, "username": "alice" },
+      "media": {
+        "id": 9001,
+        "mediaType": "movie",
+        "tmdbId": 329865,
+        "tvdbId": null,
+        "status": 5
+      }
+    },
+    {
+      "id": 556,
+      "status": 3,
+      "createdAt": "2026-07-03T11:00:00.000Z",
+      "updatedAt": "2026-07-03T11:30:00.000Z",
+      "requestedBy": { "id": 3, "username": "bob" },
+      "media": {
+        "id": 9002,
+        "mediaType": "tv",
+        "tmdbId": 63639,
+        "tvdbId": 280619,
+        "status": 2
+      }
+    }
+  ]
+}

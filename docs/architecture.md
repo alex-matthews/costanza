@@ -1,6 +1,24 @@
 # Architecture
 
-## Options considered
+Costanza is one service with **two layers**:
+
+- **Substrate layer (shipped):** ingest → normalize → correlate → store →
+  notify, plus reconcile/digest/prune jobs, read-only source clients, and
+  the read API. It turns webhook noise into a durable, correlated,
+  identity-mapped event history and delivers exactly-once notifications.
+  This layer is the system of record and the evidence source — it is not
+  the product.
+- **Council layer (designed, next):** the household media council —
+  proposals, interest, votes, cases, pleas, protections, decisions — a
+  domain model that *references* substrate events as evidence and drives
+  participation through Discord interactions. See
+  [council/domain-model.md](council/domain-model.md) and
+  [ADR-0007](adr/0007-council-domain-layer.md).
+
+The sections below cover the substrate's architecture decisions (still
+accurate as built) and the deployment model shared by both layers.
+
+## Options considered (substrate)
 
 ### Option A — Modular monolith (recommended)
 
@@ -32,13 +50,17 @@ One Python process, one container, one PVC. Hexagonal internally:
 - In-process event dispatch (plain function calls / small internal bus), no
   broker. Webhook handlers do verify→persist→enqueue-in-SQLite and return
   2xx fast; a worker loop processes the outbox.
-- Discord gateway bot runs as an async task in the same process (publishing
-  + passive reaction capture). If Discord-lib churn ever hurts, the notifier
-  port boundary lets it split out without touching the core.
+- Discord gateway bot runs as an async task in the same process. Shipped:
+  publishing via the notifier port. Council layer: the same supervised task
+  grows into an interaction gateway (buttons/selects/modals/threads —
+  [ADR-0008](adr/0008-discord-interactions-surface.md)); the port boundary
+  still lets it split out without touching the core if discord.py churn
+  ever hurts.
 - Single replica, which SQLite requires anyway and household load trivially
   permits (< 1 event/sec forever).
 
-**Pros:** matches Resolute's proven house pattern; one thing to deploy,
+**Pros:** matches the cluster's proven single-replica stateful-app
+pattern; one thing to deploy,
 back up (volsync), and debug; fixture-driven testing stays trivial; no
 infra dependencies beyond a PVC.
 **Cons:** Discord lib in the same venv as core logic; a bot crash-loop can
@@ -73,12 +95,12 @@ noise control), not to infrastructure.
 
 ## Language / runtime
 
-**Python + uv + mise, pinned to the same Python minor as Resolute
-(3.14.x today)**, FastAPI + uvicorn, pydantic v2 models for all
-contracts, `discord.py` behind a notifier port, APScheduler (or a simple
-asyncio cron loop) for jobs. Mirrors Resolute's toolchain (uv, pytest,
-ruff, fixtures, no-network tests) so the two services share one house
-style. Go/TypeScript were considered and declined: the workload is
+**Python 3.14.x + uv + mise (pinned via `.python-version`/`.mise`)**,
+FastAPI + uvicorn, pydantic v2 models for all contracts, `discord.py`
+behind a notifier port, APScheduler (or a simple asyncio cron loop) for
+jobs. Toolchain (uv, pytest, ruff, fixtures, no-network tests) is the
+shared house style across this household's services.
+Go/TypeScript were considered and declined: the workload is
 integration- and (later) LLM-heavy, where Python iteration speed wins, and
 a third runtime buys nothing a port boundary doesn't.
 
@@ -131,7 +153,17 @@ events, media, identity, ledger, signals ([ADR-0002](adr/0002-durable-store-not-
 
 ## Deployment model
 
-Standard home-ops shape, namespace `default` alongside the media apps:
+Standard home-ops shape, namespace `default` alongside the media apps.
+**Ops authority is the live cluster**: securityContext and storage
+identity follow the home-ops manifests for stateful apps
+(`runAsUser: 1032, runAsGroup: 100, fsGroup: 100, fsGroupChangePolicy:
+OnRootMismatch, runAsNonRoot: true` — the volsync restic movers run as
+PUID 1032, so any other data owner breaks backup/restore), and the
+container pattern follows home-operations/containers (identity-agnostic
+image, `USER nobody:nogroup` default, SHA-pinned alpine base, no baked
+config; storage identity always comes from Kubernetes, never the image).
+See [../deploy/README.md](../deploy/README.md) for the full posture,
+including the SQLite-on-volsync backup/restore drill.
 
 - bjw-s **app-template HelmRelease** + OCIRepository; single replica,
   `strategy: Recreate`.
@@ -143,5 +175,6 @@ Standard home-ops shape, namespace `default` alongside the media apps:
   outbound gateway connection, not inbound webhooks).
 - `/healthz`, `/readyz`, `/metrics` + ServiceMonitor; low-cardinality
   metric labels (carried over from old repo's hard-won rule).
-- Image built in the costanza repo via GitHub Actions → GHCR, Renovate
-  bumps in home-ops — identical to Resolute's intended flow.
+- Image built in the costanza repo via GitHub Actions → GHCR (SBOM,
+  provenance, cosign-signed); Renovate bumps the digest in home-ops — the
+  same publish flow every self-built app in the cluster uses.

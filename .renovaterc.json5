@@ -1,0 +1,28 @@
+{
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+  extends: ["github>home-operations/renovate-config"],
+  // The shared preset also serves Helm chart repos. Costanza has no chart
+  // artifacts, so do not inherit those post-upgrade generators here.
+  postUpgradeTasks: {
+    commands: [],
+    fileFilters: [],
+  },
+  packageRules: [
+    {
+      description: "Open PRs for GitHub Actions updates because main requires pull requests",
+      matchManagers: ["github-actions"],
+      automerge: false,
+      ignoreTests: false,
+    },
+    {
+      description: "Group uv updates (container image + mise toolchain) into one PR",
+      groupName: "uv",
+      matchDepNames: ["uv", "ghcr.io/astral-sh/uv"],
+    },
+    {
+      description: "Group python updates (container image + mise toolchain) into one PR",
+      groupName: "python",
+      matchDepNames: ["python"],
+    },
+  ],
+}

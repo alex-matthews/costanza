@@ -1,0 +1,16 @@
+{
+  "movie": {
+    "id": 431,
+    "title": "Morbius",
+    "year": 2022,
+    "releaseDate": "2022-03-30",
+    "folderPath": "/movies/Morbius (2022)",
+    "tmdbId": 526896,
+    "imdbId": "tt5108870"
+  },
+  "deletedFiles": true,
+  "movieFolderSize": 7345689012,
+  "eventType": "MovieDelete",
+  "instanceName": "Radarr",
+  "applicationUrl": ""
+}

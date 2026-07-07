@@ -44,7 +44,7 @@ differently. Nothing here is cloned wholesale.
 
 | Project | Lesson |
 | --- | --- |
-| **Resolute** (~/src/resolute) | The house style to inherit: uv + pytest, fixture-driven no-network tests, shadow-mode-first rollout, durable SQLite on PVC, bounded schema-validated optional LLM, ADRs for contested decisions, "works when the optional relay is removed". Costanza adopts all of these conventions; it does not adopt Resolute's scope. |
+| **Resolute** (~/src/resolute) | The sibling service: same engineering discipline (uv + pytest, fixture-driven no-network tests, shadow-mode-first rollout, durable SQLite on PVC, bounded schema-validated optional LLM, ADRs for contested decisions, "works when the optional relay is removed") — shared because it works, not because Resolute is authoritative. Ops/container precedent is the live cluster and home-operations/containers (both repos were corrected together in the ops reset; see build-notes.md). Costanza does not adopt Resolute's scope. |
 | **home-ops repo** | Deployment idioms: bjw-s app-template HelmReleases, OCIRepository, ExternalSecrets, volsync-backed PVCs, single-replica stateful apps in `default` namespace, litellm gateway in `ai` namespace for any future LLM calls. |
 
 Sources: [Seerr v3.2/3.3 release notes](https://docs.seerr.dev/blog/seerr-3-2-0-and-3-3-0-release-notes/), [Seerr releases](https://github.com/seerr-team/seerr/releases), [chaski](https://github.com/home-operations/chaski).

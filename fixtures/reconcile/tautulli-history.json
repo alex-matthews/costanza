@@ -1,0 +1,46 @@
+{
+  "response": {
+    "result": "success",
+    "data": {
+      "recordsFiltered": 3,
+      "data": [
+        {
+          "id": 7001,
+          "watched_status": 1,
+          "user_id": 12,
+          "user": "alice",
+          "rating_key": "51234",
+          "media_type": "movie",
+          "title": "Arrival",
+          "year": 2016,
+          "stopped": 1782033600
+        },
+        {
+          "id": 7002,
+          "watched_status": 1,
+          "user_id": 13,
+          "user": "bob",
+          "rating_key": "61099",
+          "media_type": "episode",
+          "title": "The Big Empty",
+          "grandparent_title": "The Expanse",
+          "parent_media_index": 1,
+          "media_index": 2,
+          "year": 2015,
+          "stopped": 1782037200
+        },
+        {
+          "id": 7003,
+          "watched_status": 0,
+          "user_id": 12,
+          "user": "alice",
+          "rating_key": "70000",
+          "media_type": "movie",
+          "title": "Blade Runner 2049",
+          "year": 2017,
+          "stopped": 1782040800
+        }
+      ]
+    }
+  }
+}

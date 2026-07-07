@@ -1,0 +1,27 @@
+{
+  "events": [
+    {
+      "source": "seerr",
+      "source_event_key": "seerr:health.issue:request:RQ-3001",
+      "origin": "webhook",
+      "type": "health.issue",
+      "media": {
+        "tmdb_id": 329865,
+        "title": "Arrival",
+        "year": 2016,
+        "kind": "movie",
+        "detail": {}
+      },
+      "user": {
+        "display": "alice",
+        "provider": "seerr",
+        "external_id": "alice"
+      },
+      "attrs": {
+        "kind": "request_failed",
+        "request_id": "RQ-3001",
+        "message": "Movie failed to download."
+      }
+    }
+  ]
+}

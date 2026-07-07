@@ -1,0 +1,64 @@
+{
+  "watch": {
+    "tautulli_watched_trigger": false
+  },
+  "events": [
+    {
+      "source": "tautulli",
+      "source_event_key": "tautulli:playback.stopped:13:88:61001",
+      "origin": "webhook",
+      "type": "playback.stopped",
+      "media": {
+        "tmdb_id": 63639,
+        "tvdb_id": 280619,
+        "title": "The Expanse",
+        "year": 2015,
+        "kind": "episode",
+        "detail": {
+          "season": 1,
+          "episode": 1
+        }
+      },
+      "user": {
+        "display": "bob",
+        "provider": "tautulli",
+        "external_id": "13"
+      },
+      "attrs": {
+        "player": "Bob's iPad",
+        "episode_title": "Dulcinea",
+        "video_resolution": "1080p",
+        "progress_percent": 97
+      }
+    },
+    {
+      "source": "tautulli",
+      "source_event_key": "tautulli:watch.completed:13:61001",
+      "origin": "webhook",
+      "type": "watch.completed",
+      "media": {
+        "tmdb_id": 63639,
+        "tvdb_id": 280619,
+        "title": "The Expanse",
+        "year": 2015,
+        "kind": "episode",
+        "detail": {
+          "season": 1,
+          "episode": 1
+        }
+      },
+      "user": {
+        "display": "bob",
+        "provider": "tautulli",
+        "external_id": "13"
+      },
+      "attrs": {
+        "player": "Bob's iPad",
+        "episode_title": "Dulcinea",
+        "video_resolution": "1080p",
+        "derived_from": "playback.stopped",
+        "progress_percent": 97
+      }
+    }
+  ]
+}

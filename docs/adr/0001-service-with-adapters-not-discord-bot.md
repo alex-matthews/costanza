@@ -1,6 +1,11 @@
 # ADR-0001: Service with channel adapters, not a Discord bot
 
-**Status:** accepted
+**Status:** accepted; superseded-in-part by
+[ADR-0008](0008-discord-interactions-surface.md) (2026-07-05) — the
+"Discord adapter is send-only" half is superseded (the adapter grows into
+an interaction gateway); the core boundary (headless domain service, port
+interface, core never imports discord.py, a dead bot never breaks
+ingestion) stands and is reaffirmed there.
 
 ## Context
 

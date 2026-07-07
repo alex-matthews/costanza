@@ -1,0 +1,16 @@
+{
+  "events": [
+    {
+      "source": "radarr",
+      "source_event_key": "radarr:health.restored:IndexerStatusCheck:ab9c37609cae5ce7",
+      "origin": "webhook",
+      "type": "health.issue",
+      "attrs": {
+        "level": "warning",
+        "message": "Indexers unavailable due to failures: nzbgeek",
+        "check": "IndexerStatusCheck",
+        "resolved": true
+      }
+    }
+  ]
+}

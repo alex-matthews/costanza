@@ -1,0 +1,43 @@
+{
+  "events": [
+    {
+      "source": "sonarr",
+      "source_event_key": "sonarr:media.grabbed:280619:S02E01-S02E02-S02E03:SABnzbd_nzo_seasonpack",
+      "origin": "webhook",
+      "type": "media.grabbed",
+      "media": {
+        "tmdb_id": 63639,
+        "tvdb_id": 280619,
+        "imdb_id": "tt3230854",
+        "title": "The Expanse",
+        "year": 2015,
+        "kind": "season",
+        "detail": {
+          "season": 2
+        }
+      },
+      "attrs": {
+        "episodes": [
+          {
+            "season": 2,
+            "episode": 1,
+            "title": "Safe"
+          },
+          {
+            "season": 2,
+            "episode": 2,
+            "title": "Doors & Corners"
+          },
+          {
+            "season": 2,
+            "episode": 3,
+            "title": "Static"
+          }
+        ],
+        "quality": "WEBDL-1080p",
+        "size": 42798123456,
+        "indexer": "nzbgeek"
+      }
+    }
+  ]
+}

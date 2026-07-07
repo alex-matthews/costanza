@@ -1,0 +1,13 @@
+{
+  "events": [
+    {
+      "source": "radarr",
+      "source_event_key": "radarr:unknown:MovieAdded:35ba67416bef481e",
+      "origin": "webhook",
+      "type": "source.unknown",
+      "attrs": {
+        "payload_kind": "MovieAdded"
+      }
+    }
+  ]
+}

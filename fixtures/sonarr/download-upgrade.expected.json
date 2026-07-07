@@ -1,0 +1,33 @@
+{
+  "events": [
+    {
+      "source": "sonarr",
+      "source_event_key": "sonarr:media.upgraded:280619:S01E02:A63A2E9C11B8D42F0A6E9A2B1C3D4E5F60718294",
+      "origin": "webhook",
+      "type": "media.upgraded",
+      "media": {
+        "tmdb_id": 63639,
+        "tvdb_id": 280619,
+        "imdb_id": "tt3230854",
+        "title": "The Expanse",
+        "year": 2015,
+        "kind": "episode",
+        "detail": {
+          "season": 1,
+          "episode": 2
+        }
+      },
+      "attrs": {
+        "episodes": [
+          {
+            "season": 1,
+            "episode": 2,
+            "title": "The Big Empty"
+          }
+        ],
+        "quality": "WEBDL-2160p",
+        "size": 9279812345
+      }
+    }
+  ]
+}

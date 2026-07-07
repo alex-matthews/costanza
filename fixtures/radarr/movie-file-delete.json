@@ -1,0 +1,25 @@
+{
+  "movie": {
+    "id": 512,
+    "title": "Dune: Part Two",
+    "year": 2024,
+    "releaseDate": "2024-02-27",
+    "folderPath": "/movies/Dune Part Two (2024)",
+    "tmdbId": 693134,
+    "imdbId": "tt15239678"
+  },
+  "movieFile": {
+    "id": 1290,
+    "relativePath": "Dune.Part.Two.2024.1080p.WEB-DL.DDP5.1.H.264-GROUP.mkv",
+    "path": "/movies/Dune Part Two (2024)/Dune.Part.Two.2024.1080p.WEB-DL.DDP5.1.H.264-GROUP.mkv",
+    "quality": "WEBDL-1080p",
+    "qualityVersion": 1,
+    "releaseGroup": "GROUP",
+    "sceneName": "Dune.Part.Two.2024.1080p.WEB-DL.DDP5.1.H.264-GROUP",
+    "size": 8214812345
+  },
+  "deleteReason": "upgrade",
+  "eventType": "MovieFileDelete",
+  "instanceName": "Radarr",
+  "applicationUrl": ""
+}

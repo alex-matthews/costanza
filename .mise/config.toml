@@ -1,0 +1,58 @@
+[tools]
+python = "3.14.6"
+uv = "0.11.26"
+hadolint = "2.14.0"
+actionlint = "1.7.12"
+zizmor = "1.26.1"
+shellcheck = "0.11.0"
+
+[tasks.sync]
+description = "Install locked dependencies (incl. dev group)"
+run = "uv sync --locked"
+
+[tasks.run]
+description = "Run the service locally against the example routing config"
+run = "COSTANZA_DB_PATH=${COSTANZA_DB_PATH:-/tmp/costanza-dev.db} COSTANZA_ROUTING_PATH=${COSTANZA_ROUTING_PATH:-config/routing.example.yaml} uv run costanza serve"
+
+[tasks.test]
+description = "Run the test suite"
+run = "uv run pytest"
+
+[tasks.lint]
+description = "Run ruff over source and tests"
+run = "uv run ruff check src tests"
+
+[tasks.lint-fix]
+description = "Run ruff with --fix"
+run = "uv run ruff check --fix src tests"
+
+[tasks.replay]
+description = "Feed recorded fixtures at a scratch instance end-to-end and assert timelines + exactly-once notifications"
+run = "uv run costanza replay"
+
+[tasks.dockerfile-lint]
+description = "Lint the Dockerfile"
+run = "hadolint Dockerfile"
+
+[tasks.shell-lint]
+description = "Run ShellCheck over repo shell scripts"
+run = "shellcheck scripts/*.sh"
+
+[tasks.k8s-smoke]
+description = "Run the built image under Kubernetes-like constraints (uid 1032:100, read-only rootfs, only /data writable, no HOME)"
+run = "bash scripts/k8s-smoke.sh"
+
+[tasks.workflow-lint]
+description = "Lint and security-check GitHub workflows"
+run = """
+actionlint
+zizmor .github/workflows
+"""
+
+[tasks.ci]
+description = "Core CI checks, locally (excludes the container build: run `mise run build` separately, it needs a Docker daemon)"
+depends = ["lint", "test", "replay", "dockerfile-lint", "shell-lint", "workflow-lint"]
+
+[tasks.build]
+description = "Build the container image locally"
+run = "docker build -t costanza:local ."

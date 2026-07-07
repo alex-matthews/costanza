@@ -1,0 +1,16 @@
+{
+  "series": {
+    "id": 77,
+    "title": "Rings of Power Reaction Compilations",
+    "titleSlug": "rings-of-power-reaction-compilations",
+    "path": "/tv/Rings of Power Reaction Compilations",
+    "tvdbId": 999901,
+    "tvMazeId": 0,
+    "type": "standard",
+    "year": 2022
+  },
+  "deletedFiles": true,
+  "eventType": "SeriesDelete",
+  "instanceName": "Sonarr",
+  "applicationUrl": ""
+}
