@@ -7,6 +7,7 @@ from conftest import load_fixture
 from costanza.api import build_api_router, build_ops_router
 from costanza.config import Config
 from costanza.correlate import Correlator
+from costanza.main import create_metrics_app
 from costanza.normalize import normalize
 from costanza.notify.limits import KillSwitch
 
@@ -143,7 +144,7 @@ def test_env_override_reported_and_wins(store, routing, settings, auth):
 def test_ops_endpoints_unauthenticated(client, store, routing):
     assert client.get("/healthz").json() == {"status": "ok"}
     assert client.get("/readyz").json() == {"status": "ready"}
-    metrics = client.get("/metrics")
+    metrics = TestClient(create_metrics_app()).get("/metrics")
     assert metrics.status_code == 200
     assert "costanza_outbox_backlog" in metrics.text
     assert "costanza_webhook_auth_failures" in metrics.text
