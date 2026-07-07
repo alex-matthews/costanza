@@ -25,7 +25,7 @@ Kubernetes.
   NOT Discord — a dead bot must not restart-loop ingestion).
 - ServiceMonitor on `/metrics`; alert later on `costanza_outbox_backlog`
   and `costanza_webhook_auth_failures_total`.
-- Cluster-internal Service only (`http://costanza.default.svc:8140`);
+- Cluster-internal Service only (`http://costanza.default.svc:8080`);
   no ingress in v1 — Discord uses an outbound gateway connection.
 
 ## Security context (cluster standard for stateful apps)
