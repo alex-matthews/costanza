@@ -38,9 +38,10 @@ Execution ships in council v1, staged, as one isolated executor
 - Scope of the executor is exactly **create request** — one system
   (Seerr), one verb. Never approve/decline (admin policy + Resolute's
   flow), never delete (ADR-0003), never profile changes (Resolute's
-  turf). Council downgrade verdicts are **report-only**; if downgrade
-  execution is ever wanted, it requires a new ADR naming the exact
-  system and verb — it does not inherit this seam.
+  turf). Council downgrade verdicts do not inherit this seam; their
+  execution is specified separately in
+  [ADR-0011](0011-downgrade-execution-resolute-sonarr.md) (executor:
+  Resolute → Sonarr), staged the same way.
 - The no-external-writes constraint test lifts by exactly this one module
   ([council/constraint-amendments.md](../council/constraint-amendments.md)).
 

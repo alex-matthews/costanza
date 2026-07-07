@@ -80,12 +80,14 @@ tally, and policy version. Then, by kind:
 - `keep` — recorded; the precedent shields the title from re-candidacy
   for a policy-defined cooldown.
 - `protect` — creates a `protections` row (reason required).
-- `downgrade` — **report-only**: a decision record rendered as an
-  admin-channel report; a human acts (or doesn't) in the Arrs. There is
-  no downgrade execution path in any currently specified phase —
-  executing one would need a dedicated ADR naming the exact system and
-  verb, and it sits next to Resolute's calibration territory
-  (ADR-0009 scopes the executor to create-request only).
+- `downgrade` — decided by the council; execution is specified in
+  [ADR-0011](../adr/0011-downgrade-execution-resolute-sonarr.md):
+  **Resolute** executes against **Sonarr** (profile switch → reclaim),
+  staged report-only → admin-confirm → capped-auto. Costanza never
+  touches the quality profile ([ADR-0003](../adr/0003-maintainerr-boundary.md));
+  it decides and hands off, as it does for Seerr requests, and Resolute's
+  objective UHD-worth flows back up as evidence (step 2). A downgrade
+  *keeps* the title — distinct from `delete_candidate` below.
 - `delete_candidate` — **Costanza never deletes**
   ([ADR-0003](../adr/0003-maintainerr-boundary.md) unchanged). Council
   v1: the verdict renders as a human-readable report in the admin
