@@ -37,8 +37,7 @@ ENV PATH="/app/.venv/bin:$PATH" \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     COSTANZA_DB_PATH=/data/costanza.db \
-    COSTANZA_ROUTING_PATH=/config/routing.yaml \
-    COSTANZA_LISTEN_PORT=8080
+    COSTANZA_ROUTING_PATH=/config/routing.yaml
 
 USER nobody:nogroup
 # 8080 main app, 8081 metrics (home-operations org port convention).
