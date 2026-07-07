@@ -146,9 +146,10 @@ pause" — never "history lost".
 - **Quality/format advice overlaps Resolute's calibration territory.**
   Costanza limits itself to *library audit* framing (existing files),
   never request-time decisions; a downgrade decided by the council is
-  **report-only** — executing one would require a dedicated ADR naming
-  the exact system and verb (ADR-0009 deliberately scopes the executor
-  to Seerr create-request alone).
+  **executed by Resolute against Sonarr**
+  ([ADR-0011](adr/0011-downgrade-execution-resolute-sonarr.md)) — Costanza
+  decides and hands off, never touching a quality profile (ADR-0009 scopes
+  Costanza's *own* executor to Seerr create-request alone).
 - **"Ephemeral state may be enough" is wrong for this scope** — votes,
   reasons, protections, and taste memory exist nowhere else and are
   unreconstructable. See
