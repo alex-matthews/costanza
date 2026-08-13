@@ -3,7 +3,6 @@
 import json
 
 import pytest
-
 from conftest import load_fixture
 
 from costanza.correlate import Correlator
@@ -110,7 +109,7 @@ def test_media_identity_unifies_across_sources(correlator, store):
     assert media["tmdb_id"] == 329865
     assert media["imdb_id"] == "tt2543164"  # backfilled from Radarr
     # Tautulli user id 12 maps to Alice via the identity map.
-    watch = [e for e in events if e["type"] == "watch.completed"][0]
+    watch = next(e for e in events if e["type"] == "watch.completed")
     assert watch["user_id"] == "u:alice"
 
 

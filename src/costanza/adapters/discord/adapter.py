@@ -83,7 +83,7 @@ class DiscordNotifier:
             task.cancel()
             try:
                 await task
-            except (asyncio.CancelledError, Exception):  # noqa: BLE001
+            except (asyncio.CancelledError, Exception):  # noqa: BLE001, S110
                 pass
         self._task = None
 

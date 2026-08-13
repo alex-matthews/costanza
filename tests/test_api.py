@@ -1,8 +1,7 @@
 import pytest
+from conftest import load_fixture
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-
-from conftest import load_fixture
 
 from costanza.api import build_api_router, build_ops_router
 from costanza.config import Config

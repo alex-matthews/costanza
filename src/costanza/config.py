@@ -148,7 +148,7 @@ class Settings(BaseSettings):
     db_path: Path = Path("/data/costanza.db")
     routing_path: Path = Path("/config/routing.yaml")
 
-    listen_host: str = "0.0.0.0"  # noqa: S104 — container service
+    listen_host: str = "0.0.0.0"
     listen_port: int = 8080
     # Metrics on a dedicated listener (home-operations org convention: main app
     # on 8080, /metrics on 8081, kept off the possibly-exposed main port).

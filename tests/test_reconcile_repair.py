@@ -6,7 +6,6 @@ double-counting recovered events or double-sending."""
 from datetime import timedelta
 
 import pytest
-
 from conftest import load_fixture
 
 import costanza.jobs.reconcile as reconcile_mod

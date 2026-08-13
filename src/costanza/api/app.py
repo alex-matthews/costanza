@@ -87,7 +87,7 @@ def build_api_router(config: Config, store: Store, kill: KillSwitch) -> APIRoute
 
     @router.get("/events")
     def events(
-        type: str | None = Query(default=None),  # noqa: A002 — spec'd query param name
+        type: str | None = Query(default=None),
         since: datetime | None = Query(default=None),
         user: str | None = Query(default=None),
         limit: int = Query(default=200, le=1000),
