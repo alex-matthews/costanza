@@ -173,8 +173,10 @@ including the SQLite-on-volsync backup/restore drill.
 - Cluster-internal Service; webhook sources reach it as
   `http://costanza.default.svc`. No external ingress in v1 (Discord uses an
   outbound gateway connection, not inbound webhooks).
-- `/healthz`, `/readyz`, `/metrics` + ServiceMonitor; low-cardinality
-  metric labels (carried over from old repo's hard-won rule).
+- `/healthz`, `/readyz` on the main port (8080); `/metrics` on a dedicated
+  8081 listener + ServiceMonitor (home-operations org convention, kept off
+  the main port); low-cardinality metric labels (carried over from old
+  repo's hard-won rule).
 - Image built in the costanza repo via GitHub Actions → GHCR (SBOM,
   provenance, cosign-signed); Renovate bumps the digest in home-ops — the
   same publish flow every self-built app in the cluster uses.

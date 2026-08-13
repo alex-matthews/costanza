@@ -39,7 +39,7 @@ the request lands in Seerr → the card shows what happened.**
 
 | Capability | Notes |
 | --- | --- |
-| Retention decision engine, two skins (Media Court, Which Stays) | One engine; Which Stays capped ~1/week ([council/retention-engine.md](council/retention-engine.md)); verdicts report-only for downgrade/delete |
+| Retention decision engine, two skins (Media Court, Which Stays) | One engine; Which Stays capped ~1/week ([council/retention-engine.md](council/retention-engine.md)); `downgrade` executes via Resolute→Sonarr ([ADR-0011](adr/0011-downgrade-execution-resolute-sonarr.md)), `delete` stays report-only→Maintainerr |
 | Protected Shelf with human reasons | Costanza-owned registry; Maintainerr consumes later |
 | Request accountability + watch-debt check-ins | Activation gate: household confirms visibility stance first (OQ-14) |
 | Library Wrapped (weekly/monthly) | Superlatives that provoke conversation, nothing streak-shaped |

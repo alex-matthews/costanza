@@ -62,8 +62,10 @@ council code lands.
   test to pass.
 - ADR-0003: no code path that deletes media, in any phase — the write
   allowlist above is for **Seerr create-request only**; downgrade
-  verdicts are report-only, and executing one would require a future ADR
-  naming the system and verb plus its own allowlist change (ADR-0009).
+  verdicts hand off to Resolute
+  ([ADR-0011](../adr/0011-downgrade-execution-resolute-sonarr.md)), which
+  owns the Sonarr execution — so Costanza's own write allowlist is
+  unchanged (no downgrade write verb enters this codebase).
 - The bearer-token API stays read-only (plus the existing kill switch):
   votes arrive attributed through Discord identity or not at all in v1 —
   an unattributed API vote endpoint would bypass the entire authz model.
