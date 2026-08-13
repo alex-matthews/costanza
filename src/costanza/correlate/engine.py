@@ -56,9 +56,12 @@ class Correlator:
         if source_row is None:
             raise ValueError(f"event from unregistered source {event.source!r}")
 
-        if event.media is not None and event.media.media_id is None:
-            if any((event.media.tmdb_id, event.media.tvdb_id, event.media.imdb_id, event.media.title)):
-                event.media.media_id = store.find_or_create_media(event.media)
+        if (
+            event.media is not None
+            and event.media.media_id is None
+            and any((event.media.tmdb_id, event.media.tvdb_id, event.media.imdb_id, event.media.title))
+        ):
+            event.media.media_id = store.find_or_create_media(event.media)
 
         event = resolve_user(store, event)
 

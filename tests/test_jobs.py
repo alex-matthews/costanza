@@ -5,7 +5,6 @@ import json
 from datetime import UTC, datetime, timedelta
 
 import pytest
-
 from conftest import load_fixture
 
 from costanza.correlate import Correlator

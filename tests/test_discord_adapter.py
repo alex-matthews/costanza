@@ -12,14 +12,14 @@ from costanza.schemas import RenderedMessage
 
 
 def _message(**overrides) -> RenderedMessage:
-    base = dict(
-        kind="embed",
-        title="Now available: Arrival (2016)",
-        description="Requested by Alice",
-        fields=[("Quality", "WEBDL-2160p")],
-        color=0x9B59B6,
-        footer="source: seerr",
-    )
+    base = {
+        "kind": "embed",
+        "title": "Now available: Arrival (2016)",
+        "description": "Requested by Alice",
+        "fields": [("Quality", "WEBDL-2160p")],
+        "color": 0x9B59B6,
+        "footer": "source: seerr",
+    }
     base.update(overrides)
     return RenderedMessage(**base)
 

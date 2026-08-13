@@ -18,10 +18,10 @@ from datetime import datetime, timedelta
 
 from ..config import RoutingConfig
 from ..correlate import Correlator
-from ..notify.limits import KillSwitch
-from ..notify.pipeline import enqueue_for_event, event_from_row
 from ..logging import get_logger
 from ..normalize.common import to_int
+from ..notify.limits import KillSwitch
+from ..notify.pipeline import enqueue_for_event, event_from_row
 from ..schemas import CanonicalEvent, MediaRef, UserRef, utcnow
 from ..store import Store
 
@@ -56,7 +56,7 @@ def _parse_dt(value: str | None) -> datetime | None:
     if not value:
         return None
     try:
-        return datetime.fromisoformat(value.replace("Z", "+00:00"))
+        return datetime.fromisoformat(value)
     except ValueError:
         return None
 

@@ -152,8 +152,10 @@ def render_digest(data: dict) -> RenderedMessage:
         fields.append(
             (
                 "Requests",
-                f"opened {requests.get('opened', 0)} / available "
-                f"{requests.get('available', 0)} / declined {requests.get('declined', 0)}",
+                (
+                    f"opened {requests.get('opened', 0)} / available "
+                    f"{requests.get('available', 0)} / declined {requests.get('declined', 0)}"
+                ),
             )
         )
         stale = requests.get("stale") or []
