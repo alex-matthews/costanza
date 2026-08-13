@@ -1,11 +1,54 @@
 # ADR-0011: Downgrade execution — the council decides, Resolute executes against Sonarr
 
-**Status:** accepted (fulfils the "dedicated ADR naming the exact system
-and verb" required by [ADR-0009](0009-staged-execution.md) and
-[council/retention-engine.md](../council/retention-engine.md); moves the
+**Status:** accepted; amended 2026-08-13 (fulfils the "dedicated ADR naming
+the exact system and verb" required by [ADR-0009](0009-staged-execution.md)
+and [council/retention-engine.md](../council/retention-engine.md); moves the
 `downgrade` verdict from report-only to a staged executor. Leaves
 `delete_candidate` and [ADR-0003](0003-maintainerr-boundary.md) —
 Maintainerr as the only deleter — untouched.)
+
+## Amendment (2026-08-13): the objective read is model-derived
+
+Resolute ADR-0003 (alex-matthews/resolute,
+`docs/adr/0003-llm-primary-decision-engine.md`, accepted 2026-08-13) makes
+the LLM Resolute's primary decision-maker and removes its deterministic
+scoring engine. That supersedes this ADR's premise that the evidence seam
+returns a formula-derived score. What changes, and what deliberately does
+not:
+
+- **The evidence becomes categorical and model-derived.** The numeric
+  `objective_score` (a weighted sum) is removed at Resolute's v2 cutover;
+  the read returns `worth` (resolution), `confidence`, and `reasons`. The
+  reasons are preserved as attributed evidence bullets, subject to the
+  presentation layer's normal escaping and length limits — a model-stated
+  "why" replaces a formula-stated one, and unlike v1's formula-generated
+  reasons it is derived from potentially hostile metadata, so it is data to
+  present, never text to trust. No implemented Costanza consumer of
+  `objective_score` existed at amendment time, so no runtime migration is
+  required; case-assembly code written after this amendment must consume
+  the categorical fields only.
+- **The objective/household isolation survives its vocabulary.** Resolute
+  v2 also dissolves the structured household terms named below
+  (`requester_preference`, `franchise_priority`, `storage_pressure` as
+  policy knobs) into household-preference prose — but the anti-double-
+  counting boundary this ADR draws is preserved *more* strictly, as an
+  invocation contract: an objective-worth call receives no household prose,
+  requester preferences, storage state, pins, votes, or feedback at all.
+- **The snapshot, not determinism, was always the stability mechanism.**
+  The read was never re-evaluated inside a case; `cases.evidence_json`
+  freezes it at assembly with source attribution, and that is unchanged.
+  Resolute additionally audits each worth invocation (model, prompt
+  version, evidence hash, validation result, raw output, latency).
+- **Degradation is unchanged and now also covers the model.** `worth:
+  unavailable` never blocks a case; Resolute maps model unavailability to
+  the same value.
+- **The execution seam is untouched.** The downgrade executor, its phases,
+  kill switches, and this ADR's boundary (Costanza never touches quality
+  profiles) are unaffected by Resolute's v2 pivot.
+
+The body below is preserved as accepted; where it describes
+`objective_score` or Resolute's deterministic lanes, this amendment
+governs.
 
 ## Context
 
