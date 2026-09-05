@@ -1,6 +1,6 @@
 [tools]
 python = "3.14.7"
-uv = "0.12.3"
+uv = "0.12.9"
 hadolint = "2.15.1"
 actionlint = "1.7.12"
 zizmor = "1.30.0"
