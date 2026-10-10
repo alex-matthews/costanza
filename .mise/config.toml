@@ -1,5 +1,5 @@
 [tools]
-python = "3.14.7"
+python = "3.14.8"
 uv = "0.12.23"
 hadolint = "2.15.1"
 actionlint = "1.7.12"
