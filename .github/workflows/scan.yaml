@@ -34,7 +34,7 @@ permissions:
 jobs:
   filesystem:
     name: Trivy Filesystem Scan
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       contents: read
       security-events: write
@@ -63,7 +63,7 @@ jobs:
   image:
     name: Trivy Image Scan
     if: ${{ github.event_name != 'pull_request' }}
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       contents: read
       security-events: write
